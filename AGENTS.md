@@ -20,8 +20,8 @@ Use this structure to locate files and maintain architectural integrity:
 
 - **Framework:** Next.js (App Router) + Hono (API Layer).
 - **Database:** PostgreSQL with Drizzle ORM (Type-safe).
-- **Logic Language:** TypeScript (for Web) and **Python** (for potential AI/ML modules).
-- **Auth:** NextAuthJS implementing Role-Based Access Control (RBAC).
+- **Logic Language:** TypeScript (for Web).
+- **Auth:** BetterAuth implementing Role-Based Access Control (RBAC).
 
 ## 🎨 Design System: Clinical Precision
 
@@ -91,19 +91,32 @@ When the AI is asked to build features, it must follow these rules from the **SR
 
 ---
 
-## 🧠 AI Workflow (Required)
+# AI Development Rules
 
-For every new task, always follow this process:
+## Workflow
 
-1. Read `agent.md`.
-2. Analyze the existing codebase before creating new files.
-3. Reuse existing utilities, hooks, and components.
-4. Follow the project's folder structure.
-5. Avoid duplicate logic.
-6. Keep features isolated.
-7. Prefer composition over duplication.
-8. Maintain strong type safety.
+For every task:
+
+1. Read this file before making changes.
+2. Analyze the existing codebase.
+3. Search before creating new files.
+4. Reuse existing components, hooks, utilities, and services.
+5. Follow the current folder structure.
+6. Never duplicate business logic.
+7. Prefer composition over inheritance.
+8. Maintain strict TypeScript safety.
 9. Ensure accessibility.
-10. Review the implementation before finishing.
+10. Review all changes before finishing.
 
-## Never assume something doesn't exist without searching the repository first.
+## Architecture
+
+- Follow Feature First Architecture.
+- Keep components small and reusable.
+
+## Rules
+
+- Never create duplicate components.
+- Never introduce unnecessary dependencies.
+- Never assume something doesn't exist without searching the repository.
+- Prefer existing design system components.
+- Follow existing naming conventions.
