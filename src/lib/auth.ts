@@ -1,34 +1,15 @@
 import { betterAuth } from "better-auth";
 import { drizzleAdapter } from "better-auth/adapters/drizzle";
-import { db } from "@/db"; // your drizzle instance
-import { dash } from "@better-auth/infra";
+import { drizzle } from "drizzle-orm/node-postgres";
+import { Pool } from "pg";
+import * as schema from "./auth-schema";
+
+const db = drizzle(new Pool({ connectionString: process.env.DATABASE_URL }), {
+  schema,
+});
 
 export const auth = betterAuth({
-  database: drizzleAdapter(db, {
-    provider: "pg", // or "mysql", "sqlite"
-  }),
-
-  secret: process.env.BETTER_AUTH_SECRET,
-
-  emailAndPassword: {
-    enabled: true,
-  },
-
-  logger: {
-    level: "debug",
-  },
-
-  session: {
-    cookieCache: {
-      enabled: true,
-      maxAge: 5 * 60,
-    },
-  },
-
-  rateLimit: {
-    window: 60,
-    max: 100, // 100 request per minute
-  },
-
-  plugins: [dash()],
+  database: drizzleAdapter(db, { provider: "pg", schema }),
+  baseURL: "http://localhost:3000/",
+  emailAndPassword: { enabled: true },
 });
