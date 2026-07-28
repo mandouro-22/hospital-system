@@ -1,6 +1,7 @@
 import { betterAuth } from "better-auth";
 import { drizzleAdapter } from "better-auth/adapters/drizzle";
 import { db } from "@/db"; // your drizzle instance
+import { dash } from "@better-auth/infra";
 
 export const auth = betterAuth({
   database: drizzleAdapter(db, {
@@ -28,4 +29,6 @@ export const auth = betterAuth({
     window: 60,
     max: 100, // 100 request per minute
   },
+
+  plugins: [dash()],
 });
