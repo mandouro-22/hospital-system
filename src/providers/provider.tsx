@@ -5,6 +5,7 @@ import { QueryClientProvider } from "@tanstack/react-query";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import { getQueryClient } from "@/lib/queryClient";
 import { TooltipProvider } from "@/components/ui/tooltip";
+import { Toaster } from "@/components/ui/sonner";
 
 const queryClient = getQueryClient();
 
@@ -12,6 +13,7 @@ export default function Provider({ children }: { children: React.ReactNode }) {
   return (
     <QueryClientProvider client={queryClient}>
       <TooltipProvider>{children}</TooltipProvider>
+      <Toaster />
       <ReactQueryDevtools initialIsOpen={false} />
     </QueryClientProvider>
   );

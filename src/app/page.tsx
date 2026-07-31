@@ -1,19 +1,14 @@
-"use client";
-import { useEffect, useState } from "react";
+import { Button } from "@/components/ui/button";
+import Link from "next/link";
 
-export default function Home() {
-  const [message, setMessage] = useState();
+export default function page() {
+  return (
+    <div>
+      <div>Hello world</div>
 
-  useEffect(() => {
-    const fetchData = async () => {
-      const res = await fetch("/api/hello");
-      const { message } = await res.json();
-      setMessage(message);
-    };
-    fetchData();
-  }, []);
-
-  if (!message) return <p>Loading...</p>;
-
-  return <p className="text-green-400 font-bold">{message}</p>;
+      <Link href="/sign-in">
+        <Button>Go to login page </Button>
+      </Link>
+    </div>
+  );
 }

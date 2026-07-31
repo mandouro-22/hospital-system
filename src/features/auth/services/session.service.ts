@@ -1,4 +1,3 @@
-import { AppError } from "@/lib/errors";
 import { SessionRepository } from "../repositories/session.repository";
 
 export const SessionService = {

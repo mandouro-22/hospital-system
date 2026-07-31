@@ -1,11 +1,7 @@
-import { drizzle } from "drizzle-orm/node-postgres";
-import { Pool } from "pg";
 import { eq, ne, and, like, or, desc, asc, count, isNull, sql } from "drizzle-orm";
+import { db } from "@/db";
 import { user } from "@/db/auth-schema";
 import type { UserProfile, PaginatedResult, PaginationParams, Role } from "../types/auth.types";
-
-const pool = new Pool({ connectionString: process.env.DATABASE_URL });
-const db = drizzle(pool);
 
 function toProfile(u: typeof user.$inferSelect): UserProfile {
   return {

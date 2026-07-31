@@ -1,4 +1,4 @@
-import type { UserProfile, Role } from "../types/auth.types";
+import type { UserProfile, Role, SanitizedUserDTO } from "../types/auth.types";
 
 export function toUserProfileDTO(user: UserProfile) {
   return {
@@ -13,7 +13,7 @@ export function toUserProfileDTO(user: UserProfile) {
   };
 }
 
-export function toSanitizedUserDTO(user: UserProfile) {
+export function toSanitizedUserDTO(user: UserProfile): SanitizedUserDTO {
   return {
     id: user.id,
     fullName: user.name,
@@ -21,6 +21,6 @@ export function toSanitizedUserDTO(user: UserProfile) {
     role: user.role as Role,
     image: user.image,
     emailVerified: user.emailVerified,
-    createdAt: user.createdAt,
+    createdAt: user.createdAt.toISOString(),
   };
 }

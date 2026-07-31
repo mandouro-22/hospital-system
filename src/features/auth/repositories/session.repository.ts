@@ -1,10 +1,6 @@
-import { drizzle } from "drizzle-orm/node-postgres";
-import { Pool } from "pg";
 import { eq, and, isNull } from "drizzle-orm";
+import { db } from "@/db";
 import { session } from "@/db/auth-schema";
-
-const pool = new Pool({ connectionString: process.env.DATABASE_URL });
-const db = drizzle(pool);
 
 export const SessionRepository = {
   async findActiveByUserId(userId: string) {

@@ -1,6 +1,8 @@
 "use client";
 import { Controller, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useRouter } from "next/navigation";
+import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import {
   Field,
@@ -9,22 +11,32 @@ import {
   FieldSet,
   FieldContent,
 } from "@/components/ui/field";
-import { loginSchema } from "../schema/auth";
 import { Input } from "@/components/ui/input";
+import { useLogin } from "../hooks/use-login";
+import { loginSchema, type LoginInput } from "../validations/login.schema";
 
 export function Login() {
+  const router = useRouter();
+  const login = useLogin();
   const {
     control,
     handleSubmit,
     formState: { errors },
-  } = useForm({
+  } = useForm<LoginInput>({
     resolver: zodResolver(loginSchema),
     defaultValues: { email: "", password: "" },
   });
 
-  const onSubmit = (data: { email: string; password: string }) => {
-    // TODO: integrate with TanStack Query later
-    console.log("Login data:", data);
+  const onSubmit = (data: LoginInput) => {
+    login.mutate(data, {
+      onSuccess: () => {
+        toast.success("Logged in successfully");
+        router.push("/");
+      },
+      onError: (error) => {
+        toast.error(error.message);
+      },
+    });
   };
 
   return (
@@ -83,9 +95,10 @@ export function Login() {
 
         <Button
           type="submit"
+          disabled={login.isPending}
           className="w-full bg-primary text-primary-foreground py-2 px-4 rounded-md hover:bg-primary-600 my-2"
         >
-          Sign in
+          {login.isPending ? "Signing in..." : "Sign in"}
         </Button>
       </form>
     </div>

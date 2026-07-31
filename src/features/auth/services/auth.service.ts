@@ -4,7 +4,7 @@ import { UserRepository } from "../repositories/user.repository";
 import { SessionRepository } from "../repositories/session.repository";
 import { AppError } from "@/lib/errors";
 import type { LoginInput } from "../validations/login.schema";
-import type { AuthSession, AuthenticatedUser } from "../types/auth.types";
+import type { AuthSession, AuthenticatedUserDTO } from "../types/auth.types";
 import { toAuthSessionDTO } from "../dto/auth.dto";
 
 export const AuthService = {
@@ -74,7 +74,7 @@ export const AuthService = {
     return session as AuthSession;
   },
 
-  async getAuthenticatedUser(headers: Headers): Promise<AuthenticatedUser | null> {
+  async getAuthenticatedUser(headers: Headers): Promise<AuthenticatedUserDTO | null> {
     const session = await auth.api.getSession({ headers });
     if (!session) return null;
 

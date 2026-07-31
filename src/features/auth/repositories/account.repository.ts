@@ -1,10 +1,6 @@
-import { drizzle } from "drizzle-orm/node-postgres";
-import { Pool } from "pg";
 import { eq } from "drizzle-orm";
+import { db } from "@/db";
 import { account } from "@/db/auth-schema";
-
-const pool = new Pool({ connectionString: process.env.DATABASE_URL });
-const db = drizzle(pool);
 
 export const AccountRepository = {
   async findByUserId(userId: string) {
