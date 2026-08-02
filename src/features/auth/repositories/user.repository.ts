@@ -112,11 +112,13 @@ export const UserRepository = {
     return toProfile(row);
   },
 
-  async update(id: string, data: Partial<Pick<UserProfile, "name" | "role" | "image">>): Promise<UserProfile | null> {
+  async update(id: string, data: Partial<Pick<UserProfile, "name" | "role" | "image" | "status" | "lastLogin">>): Promise<UserProfile | null> {
     const updateData: Record<string, unknown> = { updatedAt: new Date() };
     if (data.name !== undefined) updateData.name = data.name;
     if (data.role !== undefined) updateData.role = data.role;
     if (data.image !== undefined) updateData.image = data.image;
+    if (data.status !== undefined) updateData.status = data.status;
+    if (data.lastLogin !== undefined) updateData.lastLogin = data.lastLogin;
 
     const [row] = await db
       .update(user)

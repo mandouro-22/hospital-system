@@ -21,6 +21,11 @@ export const AuthService = {
       throw AppError.forbidden("Account has been deactivated");
     }
 
+    if (user.status === "locked" || user.status === "suspended") {
+      logger.warn("login.failed", { email: input.email, reason: "account_locked", status: user.status });
+      throw AppError.forbidden("Account is locked or suspended");
+    }
+
     const url = new URL(headers.get("origin") || "http://localhost:3000");
     url.pathname = "/api/auth/sign-in/email";
 
@@ -43,6 +48,11 @@ export const AuthService = {
     const data = (await baResponse.json()) as { user: AuthSession["user"]; session: AuthSession["session"] };
 
     logger.info("login.success", { userId: data.user.id, email: input.email });
+
+    await UserRepository.update(data.user.id, {
+      status: "active",
+      lastLogin: new Date(),
+    });
 
     return {
       session: data as AuthSession,

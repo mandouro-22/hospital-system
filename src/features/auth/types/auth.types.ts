@@ -11,6 +11,7 @@ export interface AuthSession {
     email: string;
     emailVerified: boolean;
     image: string | null;
+    status: UserStatus;
     role: Role;
     createdAt: Date;
     updatedAt: Date;
@@ -44,6 +45,8 @@ export interface UserProfile {
   emailVerified: boolean;
   image: string | null;
   role: Role;
+  status: UserStatus;
+  lastLogin: Date | null;
   createdAt: Date;
   updatedAt: Date;
   deletedAt: Date | null;
@@ -152,6 +155,8 @@ export interface SanitizedUserDTO {
   fullName: string;
   email: string;
   role: Role;
+  status: UserStatus;
+  lastLogin: Date;
   image: string | null;
   emailVerified: boolean;
   createdAt: string;

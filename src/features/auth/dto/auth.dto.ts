@@ -10,7 +10,7 @@ export function toAuthSessionDTO(
     email: session.user.email,
     role: session.user.role,
     image: session.user.image,
-    status: "active",
+    status: session.user.status ?? "active",
     lastLogin: lastLogin ? lastLogin.toISOString() : null,
   };
 }

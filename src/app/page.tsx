@@ -6,8 +6,8 @@ export default function page() {
     <div>
       <div>Hello world</div>
 
-      <Link href="/sign-in">
-        <Button>Go to login page </Button>
+      <Link href="/admin/users">
+        <Button>Go to users page </Button>
       </Link>
     </div>
   );

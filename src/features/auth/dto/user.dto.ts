@@ -8,8 +8,10 @@ export function toUserProfileDTO(user: UserProfile) {
     emailVerified: user.emailVerified,
     image: user.image,
     role: user.role as Role,
-    createdAt: user.createdAt,
-    updatedAt: user.updatedAt,
+    status: user.status,
+    lastLogin: user.lastLogin?.toISOString() ?? null,
+    createdAt: user.createdAt.toISOString(),
+    updatedAt: user.updatedAt.toISOString(),
   };
 }
 
