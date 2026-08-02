@@ -1,7 +1,24 @@
-import { eq, ne, and, like, or, desc, asc, count, isNull, sql } from "drizzle-orm";
+import {
+  eq,
+  ne,
+  and,
+  like,
+  or,
+  desc,
+  asc,
+  count,
+  isNull,
+  sql,
+} from "drizzle-orm";
 import { db } from "@/db";
 import { user } from "@/db/auth-schema";
-import type { UserProfile, PaginatedResult, PaginationParams, Role } from "../types/auth.types";
+import type {
+  UserProfile,
+  PaginatedResult,
+  PaginationParams,
+  Role,
+  UserStatus,
+} from "../types/auth.types";
 
 function toProfile(u: typeof user.$inferSelect): UserProfile {
   return {
@@ -11,6 +28,8 @@ function toProfile(u: typeof user.$inferSelect): UserProfile {
     emailVerified: u.emailVerified,
     image: u.image,
     role: u.role as Role,
+    status: u.status as UserStatus,
+    lastLogin: u.lastLogin,
     createdAt: u.createdAt,
     updatedAt: u.updatedAt,
     deletedAt: u.deletedAt,
@@ -28,11 +47,7 @@ export const UserRepository = {
   },
 
   async findByIdIncludeDeleted(id: string): Promise<UserProfile | null> {
-    const rows = await db
-      .select()
-      .from(user)
-      .where(eq(user.id, id))
-      .limit(1);
+    const rows = await db.select().from(user).where(eq(user.id, id)).limit(1);
     return rows.length > 0 ? toProfile(rows[0]) : null;
   },
 
@@ -45,7 +60,9 @@ export const UserRepository = {
     return rows.length > 0 ? toProfile(rows[0]) : null;
   },
 
-  async findAll(params: PaginationParams): Promise<PaginatedResult<UserProfile>> {
+  async findAll(
+    params: PaginationParams,
+  ): Promise<PaginatedResult<UserProfile>> {
     const { page, limit, search, role: roleFilter, sortBy, sortOrder } = params;
     const offset = (page - 1) * limit;
 
@@ -64,7 +81,8 @@ export const UserRepository = {
       );
     }
 
-    const whereClause = conditions.length === 1 ? conditions[0] : and(...conditions);
+    const whereClause =
+      conditions.length === 1 ? conditions[0] : and(...conditions);
 
     const [totalResult] = await db
       .select({ value: count() })
@@ -73,10 +91,14 @@ export const UserRepository = {
 
     const total = totalResult?.value ?? 0;
 
-    const orderByCol = sortBy === "email" ? user.email
-      : sortBy === "name" ? user.name
-      : sortBy === "role" ? user.role
-      : user.createdAt;
+    const orderByCol =
+      sortBy === "email"
+        ? user.email
+        : sortBy === "name"
+          ? user.name
+          : sortBy === "role"
+            ? user.role
+            : user.createdAt;
 
     const orderByFn = sortOrder === "asc" ? asc : desc;
 
@@ -99,7 +121,12 @@ export const UserRepository = {
     };
   },
 
-  async create(data: { id: string; name: string; email: string; role: string }): Promise<UserProfile> {
+  async create(data: {
+    id: string;
+    name: string;
+    email: string;
+    role: string;
+  }): Promise<UserProfile> {
     const [row] = await db
       .insert(user)
       .values({
@@ -112,7 +139,12 @@ export const UserRepository = {
     return toProfile(row);
   },
 
-  async update(id: string, data: Partial<Pick<UserProfile, "name" | "role" | "image" | "status" | "lastLogin">>): Promise<UserProfile | null> {
+  async update(
+    id: string,
+    data: Partial<
+      Pick<UserProfile, "name" | "role" | "image" | "status" | "lastLogin">
+    >,
+  ): Promise<UserProfile | null> {
     const updateData: Record<string, unknown> = { updatedAt: new Date() };
     if (data.name !== undefined) updateData.name = data.name;
     if (data.role !== undefined) updateData.role = data.role;
@@ -140,7 +172,8 @@ export const UserRepository = {
     if (excludeId) {
       conditions.push(ne(user.id, excludeId));
     }
-    const whereClause = conditions.length === 1 ? conditions[0] : and(...conditions);
+    const whereClause =
+      conditions.length === 1 ? conditions[0] : and(...conditions);
     const rows = await db
       .select({ id: user.id })
       .from(user)

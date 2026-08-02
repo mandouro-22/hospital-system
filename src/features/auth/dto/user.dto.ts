@@ -22,6 +22,8 @@ export function toSanitizedUserDTO(user: UserProfile): SanitizedUserDTO {
     email: user.email,
     role: user.role as Role,
     image: user.image,
+    status: user.status,
+    lastLogin: new Date(user.lastLogin as Date),
     emailVerified: user.emailVerified,
     createdAt: user.createdAt.toISOString(),
   };
