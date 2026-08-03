@@ -15,9 +15,9 @@ import type { SanitizedUserDTO } from "@/features/auth/types/auth.types";
 import { formatDate, statusVariant, initials } from "@/lib/utils";
 import type { SortableColumn, SortOrder } from "./user-management";
 import { UserRowActions } from "./user-row-actions";
-import { UserTableSkeleton } from "./ui/table-skeleton";
-import { UserTableError } from "./ui/table-error";
-import { UserTableEmpty } from "./ui/table-empty";
+import { UserTableSkeleton } from "../components/ui/table-skeleton";
+import { UserTableError } from "../components/ui/table-error";
+import { UserTableEmpty } from "../components/ui/table-empty";
 // import { SortableHeader } from "./ui/table-sort";
 
 interface UserTableProps {

@@ -1,22 +1,31 @@
 import { z } from "zod";
-import { ROLES } from "../types/auth.types";
 
-export const createUserSchema = z.object({
-  name: z
-    .string()
-    .min(1, "Name is required")
-    .max(255, "Name must be at most 255 characters"),
-  email: z
-    .string()
-    .trim()
-    .toLowerCase()
-    .email("Please enter a valid email address")
-    .max(255, "Email must be at most 255 characters"),
-  password: z
-    .string()
-    .min(8, "Password must be at least 8 characters")
-    .max(128, "Password must be at most 128 characters"),
-  role: z.enum(ROLES as [string, ...string[]]).default("Patient"),
+const baseUserSchema = z.object({
+  name: z.string().trim().min(2).max(200),
+  email: z.string().trim().toLowerCase().email(),
+  phone: z.string().trim().optional(),
+
+  password: z.string().trim().max(255, ""),
 });
+
+export const createUserSchema = z.discriminatedUnion("role", [
+  baseUserSchema.extend({
+    role: z.literal("ADMIN"),
+  }),
+
+  baseUserSchema.extend({
+    role: z.literal("RECEPTIONIST"),
+    departmentId: z.string().uuid(),
+    employeeCode: z.string().trim().min(2),
+  }),
+
+  baseUserSchema.extend({
+    role: z.literal("DOCTOR"),
+    departmentId: z.string().uuid(),
+    employeeCode: z.string().trim().min(2),
+    specialization: z.string().trim().min(2),
+    licenseNumber: z.string().trim().min(2),
+  }),
+]);
 
 export type CreateUserInput = z.infer<typeof createUserSchema>;
