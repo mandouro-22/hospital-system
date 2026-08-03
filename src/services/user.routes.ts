@@ -35,7 +35,10 @@ export const userRoutes = new Hono<{ Variables: AuthVariables }>()
     requireAdmin,
     zodValidator("json", createUserSchema),
     async (c) => {
-      const user = await UserService.create(c.req.valid("json"));
+      const input = c.req.valid("json");
+      const createdBy = c.get("userId");
+
+      const user = await UserService.createWithProfile(input, createdBy);
       return created(c, toSanitizedUserDTO(user), "User created successfully");
     },
   )
