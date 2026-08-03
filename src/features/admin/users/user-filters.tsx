@@ -18,6 +18,7 @@ const STATUS_OPTIONS: UserStatus[] = [
   "inactive",
   "locked",
   "suspended",
+  "pending",
 ];
 
 type UserFiltersProps = {

@@ -3,28 +3,31 @@ import { z } from "zod";
 const baseUserSchema = z.object({
   name: z.string().trim().min(2).max(200),
   email: z.string().trim().toLowerCase().email(),
-  phone: z.string().trim().optional(),
-
-  password: z.string().trim().max(255, ""),
+  password: z.string().trim().min(8).max(255),
 });
 
 export const createUserSchema = z.discriminatedUnion("role", [
   baseUserSchema.extend({
-    role: z.literal("ADMIN"),
+    role: z.literal("Admin"),
   }),
 
   baseUserSchema.extend({
-    role: z.literal("RECEPTIONIST"),
-    departmentId: z.string().uuid(),
-    employeeCode: z.string().trim().min(2),
+    role: z.literal("Receptionist"),
+    departmentId: z.string().trim().min(1),
+    employeeCode: z.string().trim().min(2).max(50),
+    jobTitle: z.string().trim().min(2).max(100),
+    hireDate: z.coerce.date(),
   }),
 
   baseUserSchema.extend({
-    role: z.literal("DOCTOR"),
-    departmentId: z.string().uuid(),
-    employeeCode: z.string().trim().min(2),
-    specialization: z.string().trim().min(2),
-    licenseNumber: z.string().trim().min(2),
+    role: z.literal("Doctor"),
+    departmentId: z.string().trim().min(1),
+    employeeCode: z.string().trim().min(2).max(50),
+    jobTitle: z.string().trim().min(2).max(100),
+    hireDate: z.coerce.date(),
+    specialization: z.string().trim().min(2).max(100),
+    licenseNumber: z.string().trim().min(2).max(50),
+    consultationDuration: z.string().trim().min(1).max(20),
   }),
 ]);
 

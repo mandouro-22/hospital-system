@@ -1,7 +1,6 @@
 import { auth } from "@/lib/auth";
 import { logger } from "@/lib/logger";
 import { UserRepository } from "../repositories/user.repository";
-import { AccountRepository } from "../repositories/account.repository";
 import { AppError } from "@/lib/errors";
 import type { CreateUserInput } from "../validations/create-user.schema";
 import type { UpdateUserInput } from "../validations/update-user.schema";
@@ -37,54 +36,50 @@ export const UserService = {
     });
   },
 
-  async create(input: CreateUserInput, createdBy?: string): Promise<UserProfile> {
-    const existing = await UserRepository.findByEmail(input.email);
-    if (existing) {
-      throw AppError.conflict("A user with this email already exists");
-    }
-
-    const result = await auth.api.signUpEmail({
-      body: {
-        name: input.name,
-        email: input.email,
-        password: input.password,
-        role: input.role,
-      },
-      headers: new Headers(),
-    });
-
-    const created = await UserRepository.findById(result.user.id);
-    if (!created) {
-      throw AppError.internal("Failed to create user");
-    }
-
-    logger.info("user.created", { userId: created.id, email: created.email, role: created.role });
-
-    return created;
-  },
-
   async createWithProfile(
     input: CreateUserInput,
     createdBy: string,
   ): Promise<UserProfile> {
     const existingUser = await UserRepository.findByEmail(input.email);
     if (existingUser) {
-      throw AppError.conflict("A user with this email already exists");
+      throw AppError.emailAlreadyExists();
     }
 
-    const existingDept = await db
-      .select()
-      .from(department)
-      .where(eq(department.id, input.departmentId))
-      .limit(1);
+    if (input.role === "Receptionist" || input.role === "Doctor") {
+      const existingDepartment = await db
+        .select({ id: department.id })
+        .from(department)
+        .where(eq(department.id, input.departmentId))
+        .limit(1);
 
-    if (!existingDept || existingDept.length === 0) {
-      throw AppError.badRequest("Department not found");
+      if (!existingDepartment.length) {
+        throw AppError.departmentNotFound();
+      }
+
+      const existingEmployeeCode = await db
+        .select({ id: staff.id })
+        .from(staff)
+        .where(eq(staff.employeeCode, input.employeeCode))
+        .limit(1);
+
+      if (existingEmployeeCode.length) {
+        throw AppError.employeeCodeAlreadyExists();
+      }
     }
 
-    let userId: string;
-    let staffRecordId?: string;
-    let doctorRecordId?: string;
+    if (input.role === "Doctor") {
+      const existingLicense = await db
+        .select({ id: doctor.id })
+        .from(doctor)
+        .where(eq(doctor.licenseNumber, input.licenseNumber))
+        .limit(1);
+
+      if (existingLicense.length) {
+        throw AppError.licenseNumberAlreadyExists();
+      }
+    }
+
+    let userId: string | null = null;
 
     try {
       const result = await auth.api.signUpEmail({
@@ -99,102 +94,41 @@ export const UserService = {
 
       userId = result.user.id;
 
-      const userProfile = await UserRepository.findById(userId);
-      if (!userProfile) {
-        throw AppError.internal("Failed to create user");
-      }
+      await db.transaction(async (tx) => {
+        await tx
+          .update(users)
+          .set({
+            createdBy,
+            status: "pending",
+            updatedAt: new Date(),
+          })
+          .where(eq(users.id, userId!));
 
-      const userUpdateData = {
-        createdBy,
-        status: "PENDING" as const,
-        updatedAt: new Date(),
-      };
-
-      await db.update(users).set(userUpdateData).where(eq(users.id, userId));
-
-      if (input.role === "RECEPTIONIST") {
-        const [staffRecord] = await db
-          .insert(staff)
-          .values({
-            userId,
+        if (input.role === "Receptionist" || input.role === "Doctor") {
+          await tx.insert(staff).values({
+            userId: userId!,
             employeeCode: input.employeeCode,
             departmentId: input.departmentId,
             jobTitle: input.jobTitle,
-            hireDate: input.hireDate || new Date(),
-            createdAt: new Date(),
-            updatedAt: new Date(),
-          })
-          .returning();
-
-        staffRecordId = staffRecord.id;
-
-        const employeeCodeExists = await db
-          .select()
-          .from(staff)
-          .where(eq(staff.employeeCode, input.employeeCode))
-          .limit(1);
-
-        if (employeeCodeExists.length > 0) {
-          throw AppError.conflict("Employee code already exists");
+            hireDate: input.hireDate,
+          });
         }
-      } else if (input.role === "DOCTOR") {
-        const [doctorRecord] = await db
-          .insert(doctor)
-          .values({
-            userId,
+
+        if (input.role === "Doctor") {
+          await tx.insert(doctor).values({
+            userId: userId!,
             specialization: input.specialization,
             licenseNumber: input.licenseNumber,
             consultationDuration: input.consultationDuration,
-            createdAt: new Date(),
-            updatedAt: new Date(),
-          })
-          .returning();
-
-        doctorRecordId = doctorRecord.id;
-
-        const licenseNumberExists = await db
-          .select()
-          .from(doctor)
-          .where(eq(doctor.licenseNumber, input.licenseNumber))
-          .limit(1);
-
-        if (licenseNumberExists.length > 0) {
-          throw AppError.conflict("License number already exists");
+          });
         }
-
-        const employeeCodeExists = await db
-          .select()
-          .from(staff)
-          .where(eq(staff.employeeCode, input.employeeCode))
-          .limit(1);
-
-        if (employeeCodeExists.length > 0) {
-          throw AppError.conflict("Employee code already exists");
-        }
-
-        const staffRecord = await db
-          .insert(staff)
-          .values({
-            userId,
-            employeeCode: input.employeeCode,
-            departmentId: input.departmentId,
-            jobTitle: input.jobTitle,
-            hireDate: input.hireDate || new Date(),
-            createdAt: new Date(),
-            updatedAt: new Date(),
-          })
-          .returning();
-
-        staffRecordId = staffRecord[0].id;
-      }
+      });
 
       logger.info("user.created", {
         userId,
         email: input.email,
         role: input.role,
         createdBy,
-        staffRecordId,
-        doctorRecordId,
       });
 
       const finalUser = await UserRepository.findById(userId);
@@ -212,7 +146,7 @@ export const UserService = {
 
       if (userId) {
         try {
-          await AccountRepository.deleteByUserId(userId);
+          await db.delete(users).where(eq(users.id, userId));
         } catch (cleanupError) {
           logger.error("user.cleanup.failed", {
             userId,
