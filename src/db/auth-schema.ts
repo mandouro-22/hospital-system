@@ -9,7 +9,7 @@ import {
   index,
 } from "drizzle-orm/pg-core";
 
-export const users = pgTable("users", {
+export const users = pgTable("user", {
   id: uuid("id").primaryKey().defaultRandom(),
   email: text("email").notNull().unique(),
   name: text("name").notNull(),
@@ -126,7 +126,9 @@ export const doctor = pgTable("doctor", {
     .references(() => users.id, { onDelete: "cascade" }),
   specialization: varchar("specialization", { length: 100 }).notNull(),
   licenseNumber: varchar("license_number", { length: 50 }).notNull().unique(),
-  consultationDuration: varchar("consultation_duration", { length: 20 }).notNull(),
+  consultationDuration: varchar("consultation_duration", {
+    length: 20,
+  }).notNull(),
   createdAt: timestamp("created_at", { withTimezone: true })
     .defaultNow()
     .notNull(),
