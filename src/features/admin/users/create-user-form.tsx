@@ -1,13 +1,18 @@
 "use client";
 
-import React from "react";
-import { useForm, FormProvider, Controller } from "react-hook-form";
+import { Controller, FormProvider, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { Loader2 } from "lucide-react";
 import { z } from "zod";
 import { useCreateUser } from "@/features/auth/hooks/use-users";
+import { useDepartments } from "@/features/departments/hooks/use-departments";
+import {
+  CONSULTATION_DURATIONS,
+  JOB_TITLES,
+  SPECIALIZATIONS,
+} from "@/features/auth/constants/staff-options";
 import { createUserSchema } from "@/features/auth/validations/create-user.schema";
 import type { CreateUserInput } from "@/features/auth/validations/create-user.schema";
 import { Input } from "@/components/ui/input";
@@ -39,13 +44,13 @@ const formSchema = z.object({
   email: z.string().trim().toLowerCase().email(),
   password: z.string().trim().min(8).max(255),
   role: z.enum(["Admin", "Doctor", "Receptionist"]),
-  departmentId: z.string().trim().min(1).optional(),
+  departmentId: z.string().uuid().optional(),
   employeeCode: z.string().trim().min(2).max(50).optional(),
-  jobTitle: z.string().trim().min(2).max(100).optional(),
+  jobTitle: z.enum(JOB_TITLES).optional(),
   hireDate: z.string().optional(),
-  specialization: z.string().trim().min(2).max(100).optional(),
+  specialization: z.enum(SPECIALIZATIONS).optional(),
   licenseNumber: z.string().trim().min(2).max(50).optional(),
-  consultationDuration: z.string().trim().min(1).max(20).optional(),
+  consultationDuration: z.enum(CONSULTATION_DURATIONS).optional(),
 });
 
 type FormValues = z.infer<typeof formSchema>;
@@ -53,6 +58,9 @@ type FormValues = z.infer<typeof formSchema>;
 export default function CreateUserForm() {
   const router = useRouter();
   const createUser = useCreateUser();
+  const { data: departmentsResponse, isPending: isDepartmentsLoading, error: departmentsError } =
+    useDepartments();
+  const departments = departmentsResponse?.data ?? [];
 
   const methods = useForm<FormValues>({
     resolver: zodResolver(formSchema),
@@ -66,18 +74,22 @@ export default function CreateUserForm() {
   } = methods;
 
   const selectedRole = watch("role");
-
   const showStaffFields = selectedRole === "Doctor" || selectedRole === "Receptionist";
+  const departmentsUnavailable = showStaffFields && (!departments.length || Boolean(departmentsError));
 
   const onSubmit = async (values: FormValues) => {
     try {
       const input = createUserSchema.parse(values as CreateUserInput);
-      await createUser.mutateAsync(input);
-      toast.success("User created successfully");
+      const result = await createUser.mutateAsync(input);
+      const doctorNumber = result.data.doctorNumber;
+      toast.success(
+        doctorNumber
+          ? `Doctor created successfully. Doctor number: ${doctorNumber}`
+          : "User created successfully",
+      );
       router.push("/admin/users");
     } catch (error) {
-      const errorMessage =
-        error instanceof Error ? error.message : "Failed to create user";
+      const errorMessage = error instanceof Error ? error.message : "Failed to create user";
       toast.error(errorMessage);
     }
   };
@@ -96,6 +108,7 @@ export default function CreateUserForm() {
         render={({ field }) => (
           <Input
             {...field}
+            value={field.value ?? ""}
             id={name}
             type={type}
             placeholder={placeholder}
@@ -103,11 +116,49 @@ export default function CreateUserForm() {
           />
         )}
       />
-      {errors[name] && (
-        <p className="text-sm text-destructive">{errors[name].message}</p>
-      )}
+      {errors[name] && <p className="text-sm text-destructive">{errors[name].message}</p>}
     </div>
   );
+
+  const renderSelect = (
+    name: "departmentId" | "jobTitle" | "specialization" | "consultationDuration",
+    label: string,
+    options: readonly { value: string; label: string }[],
+    placeholder: string,
+    disabled = false,
+  ) => (
+    <div className="space-y-2">
+      <Label htmlFor={name}>{label}</Label>
+      <Controller
+        name={name}
+        control={control}
+        render={({ field }) => (
+          <Select
+            onValueChange={field.onChange}
+            value={field.value}
+            disabled={isSubmitting || disabled}
+          >
+            <SelectTrigger id={name}>
+              <SelectValue placeholder={placeholder} />
+            </SelectTrigger>
+            <SelectContent>
+              {options.map((option) => (
+                <SelectItem key={option.value} value={option.value}>
+                  {option.label}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        )}
+      />
+      {errors[name] && <p className="text-sm text-destructive">{errors[name].message}</p>}
+    </div>
+  );
+
+  const departmentOptions = departments.map((department) => ({
+    value: department.id,
+    label: department.name,
+  }));
 
   return (
     <div className="mx-auto max-w-2xl">
@@ -129,7 +180,6 @@ export default function CreateUserForm() {
 
               <div className="grid gap-4 sm:grid-cols-2">
                 {renderField("password", "Password *", "password", "Enter password")}
-
                 <div className="space-y-2">
                   <Label htmlFor="role">Role *</Label>
                   <Controller
@@ -154,66 +204,55 @@ export default function CreateUserForm() {
                       </Select>
                     )}
                   />
-                  {errors.role && (
-                    <p className="text-sm text-destructive">
-                      {errors.role.message}
-                    </p>
-                  )}
+                  {errors.role && <p className="text-sm text-destructive">{errors.role.message}</p>}
                 </div>
               </div>
 
               {showStaffFields && (
                 <div className="space-y-6 rounded-lg border p-4">
-                  <p className="text-sm font-medium text-muted-foreground">
-                    Staff Details
-                  </p>
+                  <p className="text-sm font-medium text-muted-foreground">Staff Details</p>
                   <div className="grid gap-4 sm:grid-cols-2">
-                    {renderField(
+                    {renderSelect(
                       "departmentId",
-                      "Department ID *",
-                      "text",
-                      "Enter department ID",
+                      "Department *",
+                      departmentOptions,
+                      isDepartmentsLoading ? "Loading departments..." : "Select a department",
+                      isDepartmentsLoading || Boolean(departmentsError),
                     )}
-                    {renderField(
-                      "employeeCode",
-                      "Employee Code *",
-                      "text",
-                      "Enter employee code",
-                    )}
-                    {renderField(
+                    {renderField("employeeCode", "Employee Code *", "text", "Enter employee code")}
+                    {renderSelect(
                       "jobTitle",
                       "Job Title *",
-                      "text",
-                      "Enter job title",
+                      JOB_TITLES.map((value) => ({ value, label: value })),
+                      "Select a job title",
                     )}
                     {renderField("hireDate", "Hire Date *", "date", "")}
                   </div>
+                  {departmentsError && (
+                    <p className="text-sm text-destructive">Unable to load departments. Please try again.</p>
+                  )}
+                  {!isDepartmentsLoading && !departmentsError && !departments.length && (
+                    <p className="text-sm text-destructive">No departments are available. Seed departments before creating staff.</p>
+                  )}
                 </div>
               )}
 
               {selectedRole === "Doctor" && (
                 <div className="space-y-6 rounded-lg border p-4">
-                  <p className="text-sm font-medium text-muted-foreground">
-                    Medical Details
-                  </p>
+                  <p className="text-sm font-medium text-muted-foreground">Medical Details</p>
                   <div className="grid gap-4 sm:grid-cols-2">
-                    {renderField(
+                    {renderSelect(
                       "specialization",
                       "Specialization *",
-                      "text",
-                      "Enter specialization",
+                      SPECIALIZATIONS.map((value) => ({ value, label: value })),
+                      "Select a specialization",
                     )}
-                    {renderField(
-                      "licenseNumber",
-                      "License Number *",
-                      "text",
-                      "Enter license number",
-                    )}
-                    {renderField(
+                    {renderField("licenseNumber", "License Number *", "text", "Enter license number")}
+                    {renderSelect(
                       "consultationDuration",
                       "Consultation Duration *",
-                      "text",
-                      "e.g. 30 mins",
+                      CONSULTATION_DURATIONS.map((value) => ({ value, label: value })),
+                      "Select a duration",
                     )}
                   </div>
                 </div>
@@ -228,7 +267,7 @@ export default function CreateUserForm() {
                 >
                   Cancel
                 </Button>
-                <Button type="submit" disabled={isSubmitting}>
+                <Button type="submit" disabled={isSubmitting || departmentsUnavailable}>
                   {isSubmitting && <Loader2 className="mr-2 size-4 animate-spin" />}
                   Create User
                 </Button>

@@ -1,4 +1,4 @@
-import { relations } from "drizzle-orm";
+import { relations, sql } from "drizzle-orm";
 import {
   pgTable,
   text,
@@ -107,7 +107,7 @@ export const staff = pgTable("staff", {
     .notNull()
     .references(() => users.id, { onDelete: "cascade" }),
   employeeCode: varchar("employee_code", { length: 50 }).notNull().unique(),
-  departmentId: varchar("department_id", { length: 50 }).notNull(),
+  departmentId: uuid("department_id").notNull(),
   jobTitle: varchar("job_title", { length: 100 }).notNull(),
   hireDate: timestamp("hire_date", { withTimezone: true }).notNull(),
   createdAt: timestamp("created_at", { withTimezone: true })
@@ -126,6 +126,10 @@ export const doctor = pgTable("doctor", {
     .references(() => users.id, { onDelete: "cascade" }),
   specialization: varchar("specialization", { length: 100 }).notNull(),
   licenseNumber: varchar("license_number", { length: 50 }).notNull().unique(),
+  doctorNumber: varchar("doctor_number", { length: 20 })
+    .notNull()
+    .unique()
+    .default(sql`'DOC-' || lpad(nextval('doctor_number_seq')::text, 6, '0')`),
   consultationDuration: varchar("consultation_duration", {
     length: 20,
   }).notNull(),
@@ -139,7 +143,7 @@ export const doctor = pgTable("doctor", {
 });
 
 export const department = pgTable("department", {
-  id: varchar("id", { length: 50 }).primaryKey(),
+  id: uuid("id").primaryKey().defaultRandom(),
   name: varchar("name", { length: 100 }).notNull().unique(),
   description: text("description"),
   createdAt: timestamp("created_at", { withTimezone: true })

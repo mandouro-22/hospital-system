@@ -15,6 +15,11 @@ import {
   department,
 } from "@/db/auth-schema";
 
+export type CreatedUserResult = {
+  user: UserProfile;
+  doctorNumber?: string;
+};
+
 export const UserService = {
   async findById(id: string): Promise<UserProfile> {
     const user = await UserRepository.findById(id);
@@ -39,7 +44,7 @@ export const UserService = {
   async createWithProfile(
     input: CreateUserInput,
     createdBy: string,
-  ): Promise<UserProfile> {
+  ): Promise<CreatedUserResult> {
     const existingUser = await UserRepository.findByEmail(input.email);
     if (existingUser) {
       throw AppError.emailAlreadyExists();
@@ -80,6 +85,7 @@ export const UserService = {
     }
 
     let userId: string | null = null;
+    let doctorNumber: string | undefined;
 
     try {
       const result = await auth.api.signUpEmail({
@@ -115,12 +121,21 @@ export const UserService = {
         }
 
         if (input.role === "Doctor") {
-          await tx.insert(doctor).values({
-            userId: userId!,
-            specialization: input.specialization,
-            licenseNumber: input.licenseNumber,
-            consultationDuration: input.consultationDuration,
-          });
+          const [createdDoctor] = await tx
+            .insert(doctor)
+            .values({
+              userId: userId!,
+              specialization: input.specialization,
+              licenseNumber: input.licenseNumber,
+              consultationDuration: input.consultationDuration,
+            })
+            .returning({ doctorNumber: doctor.doctorNumber });
+
+          if (!createdDoctor) {
+            throw AppError.internal("Failed to create doctor profile");
+          }
+
+          doctorNumber = createdDoctor.doctorNumber;
         }
       });
 
@@ -136,7 +151,7 @@ export const UserService = {
         throw AppError.internal("Failed to retrieve created user");
       }
 
-      return finalUser;
+      return { user: finalUser, doctorNumber };
     } catch (error) {
       logger.error("user.creation.failed", {
         email: input.email,

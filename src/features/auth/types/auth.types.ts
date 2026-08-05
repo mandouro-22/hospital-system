@@ -161,3 +161,7 @@ export interface SanitizedUserDTO {
   emailVerified: boolean;
   createdAt: string;
 }
+
+export interface CreatedUserDTO extends SanitizedUserDTO {
+  doctorNumber?: string;
+}

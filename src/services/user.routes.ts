@@ -38,8 +38,15 @@ export const userRoutes = new Hono<{ Variables: AuthVariables }>()
       const input = c.req.valid("json");
       const createdBy = c.get("userId");
 
-      const user = await UserService.createWithProfile(input, createdBy);
-      return created(c, toSanitizedUserDTO(user), "User created successfully");
+      const result = await UserService.createWithProfile(input, createdBy);
+      return created(
+        c,
+        {
+          ...toSanitizedUserDTO(result.user),
+          ...(result.doctorNumber ? { doctorNumber: result.doctorNumber } : {}),
+        },
+        "User created successfully",
+      );
     },
   )
   .patch(
