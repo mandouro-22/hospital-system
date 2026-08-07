@@ -5,6 +5,7 @@ import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import {
   ChevronsUpDown,
+  HandHelping,
   LayoutDashboard,
   LogOut,
   Search,
@@ -13,11 +14,7 @@ import {
   Users,
   type LucideIcon,
 } from "lucide-react";
-import {
-  Avatar,
-  AvatarFallback,
-  AvatarImage,
-} from "@/components/ui/avatar";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -74,6 +71,11 @@ const navigation: NavItem[] = [
     title: "Doctors",
     url: "/admin/doctors",
     icon: Stethoscope,
+  },
+  {
+    title: "Receptionists",
+    url: "/admin/receptionists",
+    icon: HandHelping,
   },
 ];
 

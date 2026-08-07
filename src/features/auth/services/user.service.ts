@@ -12,12 +12,14 @@ import {
   users,
   staff,
   doctor,
+  receptionist,
   department,
 } from "@/db/auth-schema";
 
 export type CreatedUserResult = {
   user: UserProfile;
   doctorNumber?: string;
+  receptionistNumber?: string;
 };
 
 export const UserService = {
@@ -29,7 +31,9 @@ export const UserService = {
     return user;
   },
 
-  async findAll(params: PaginationInput): Promise<PaginatedResult<UserProfile>> {
+  async findAll(
+    params: PaginationInput,
+  ): Promise<PaginatedResult<UserProfile>> {
     return UserRepository.findAll({
       page: params.page,
       limit: params.limit,
@@ -86,6 +90,7 @@ export const UserService = {
 
     let userId: string | null = null;
     let doctorNumber: string | undefined;
+    let receptionistNumber: string | undefined;
 
     try {
       const result = await auth.api.signUpEmail({
@@ -137,6 +142,21 @@ export const UserService = {
 
           doctorNumber = createdDoctor.doctorNumber;
         }
+
+        if (input.role === "Receptionist") {
+          const [createdReceptionist] = await tx
+            .insert(receptionist)
+            .values({
+              userId: userId!,
+            })
+            .returning({ receptionistNumber: receptionist.receptionistNumber });
+
+          if (!createdReceptionist) {
+            throw AppError.internal("Failed to create receptionist profile");
+          }
+
+          receptionistNumber = createdReceptionist.receptionistNumber;
+        }
       });
 
       logger.info("user.created", {
@@ -151,7 +171,7 @@ export const UserService = {
         throw AppError.internal("Failed to retrieve created user");
       }
 
-      return { user: finalUser, doctorNumber };
+      return { user: finalUser, doctorNumber, receptionistNumber };
     } catch (error) {
       logger.error("user.creation.failed", {
         email: input.email,
@@ -165,7 +185,10 @@ export const UserService = {
         } catch (cleanupError) {
           logger.error("user.cleanup.failed", {
             userId,
-            error: cleanupError instanceof Error ? cleanupError.message : String(cleanupError),
+            error:
+              cleanupError instanceof Error
+                ? cleanupError.message
+                : String(cleanupError),
           });
         }
       }
@@ -184,7 +207,8 @@ export const UserService = {
       throw AppError.badRequest("Cannot update a deactivated user");
     }
 
-    const updateData: Partial<Pick<UserProfile, "name" | "role" | "image">> = {};
+    const updateData: Partial<Pick<UserProfile, "name" | "role" | "image">> =
+      {};
     if (input.name !== undefined) updateData.name = input.name;
     if (input.role !== undefined) updateData.role = input.role as Role;
     if (input.image !== undefined) updateData.image = input.image;

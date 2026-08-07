@@ -2,7 +2,12 @@ export type Role = "Admin" | "Doctor" | "Receptionist" | "Patient";
 
 export const ROLES: Role[] = ["Admin", "Doctor", "Receptionist", "Patient"];
 
-export type UserStatus = "active" | "inactive" | "locked" | "suspended" | "pending";
+export type UserStatus =
+  | "active"
+  | "inactive"
+  | "locked"
+  | "suspended"
+  | "pending";
 
 export interface AuthSession {
   user: {
@@ -164,4 +169,5 @@ export interface SanitizedUserDTO {
 
 export interface CreatedUserDTO extends SanitizedUserDTO {
   doctorNumber?: string;
+  receptionistNumber?: string;
 }

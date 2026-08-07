@@ -143,6 +143,26 @@ export const doctor = pgTable("doctor", {
     .notNull(),
 });
 
+export const receptionist = pgTable("receptionist", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  userId: uuid("user_id")
+    .notNull()
+    .references(() => users.id, { onDelete: "cascade" }),
+  receptionistNumber: varchar("receptionist_number", { length: 20 })
+    .notNull()
+    .unique()
+    .default(
+      sql`'REC-' || lpad(nextval('receptionist_number_seq')::text, 6, '0')`,
+    ),
+  createdAt: timestamp("created_at", { withTimezone: true })
+    .defaultNow()
+    .notNull(),
+  updatedAt: timestamp("updated_at", { withTimezone: true })
+    .defaultNow()
+    .$onUpdate(() => new Date())
+    .notNull(),
+});
+
 export const department = pgTable("department", {
   id: uuid("id").primaryKey().defaultRandom(),
   name: varchar("name", { length: 100 }).notNull().unique(),
@@ -178,6 +198,7 @@ export const usersRelations = relations(users, ({ many, one }) => ({
   accounts: many(account),
   staff: many(staff),
   doctor: many(doctor),
+  receptionist: many(receptionist),
   createdByUser: one(users, {
     fields: [users.createdBy],
     references: [users.id],
@@ -221,6 +242,13 @@ export const doctorScheduleRelations = relations(doctorSchedule, ({ one }) => ({
   doctor: one(doctor, {
     fields: [doctorSchedule.doctorId],
     references: [doctor.id],
+  }),
+}));
+
+export const receptionistRelations = relations(receptionist, ({ one }) => ({
+  user: one(users, {
+    fields: [receptionist.userId],
+    references: [users.id],
   }),
 }));
 

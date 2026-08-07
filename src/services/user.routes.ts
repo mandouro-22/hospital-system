@@ -1,6 +1,9 @@
 import { Hono } from "hono";
 import { zodValidator } from "@/lib/zod-validator";
-import { requireAuth, requireAdmin } from "@/features/auth/middleware/auth.middleware";
+import {
+  requireAuth,
+  requireAdmin,
+} from "@/features/auth/middleware/auth.middleware";
 import { uuidParamSchema } from "@/features/auth/validations/params.schema";
 import { paginationSchema } from "@/features/auth/validations/pagination.schema";
 import { createUserSchema } from "@/features/auth/validations/create-user.schema";
@@ -20,15 +23,10 @@ export const userRoutes = new Hono<{ Variables: AuthVariables }>()
       return success(c, toSanitizedUserDTO(user));
     },
   )
-  .get(
-    "/",
-    requireAuth,
-    zodValidator("query", paginationSchema),
-    async (c) => {
-      const result = await UserService.findAll(c.req.valid("query"));
-      return paginated(c, result.data.map(toSanitizedUserDTO), result.pagination);
-    },
-  )
+  .get("/", requireAuth, zodValidator("query", paginationSchema), async (c) => {
+    const result = await UserService.findAll(c.req.valid("query"));
+    return paginated(c, result.data.map(toSanitizedUserDTO), result.pagination);
+  })
   .post(
     "/",
     requireAuth,
@@ -44,6 +42,9 @@ export const userRoutes = new Hono<{ Variables: AuthVariables }>()
         {
           ...toSanitizedUserDTO(result.user),
           ...(result.doctorNumber ? { doctorNumber: result.doctorNumber } : {}),
+          ...(result.receptionistNumber
+            ? { receptionistNumber: result.receptionistNumber }
+            : {}),
         },
         "User created successfully",
       );
@@ -56,7 +57,10 @@ export const userRoutes = new Hono<{ Variables: AuthVariables }>()
     zodValidator("param", uuidParamSchema),
     zodValidator("json", updateUserSchema),
     async (c) => {
-      const user = await UserService.update(c.req.valid("param").id, c.req.valid("json"));
+      const user = await UserService.update(
+        c.req.valid("param").id,
+        c.req.valid("json"),
+      );
       return success(c, toSanitizedUserDTO(user), "User updated successfully");
     },
   )

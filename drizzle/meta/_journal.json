@@ -50,6 +50,13 @@
       "when": 1786097819663,
       "tag": "0006_add-doctor-schedule",
       "breakpoints": true
+    },
+    {
+      "idx": 7,
+      "version": "7",
+      "when": 1786126489941,
+      "tag": "0007_orange_fat_cobra",
+      "breakpoints": true
     }
   ]
 }
