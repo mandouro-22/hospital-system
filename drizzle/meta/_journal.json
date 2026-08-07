@@ -22,6 +22,27 @@
       "when": 1785688354570,
       "tag": "0002_tough_sister_grimm",
       "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1785859382069,
+      "tag": "0003_wealthy_maggott",
+      "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1785873987271,
+      "tag": "0004_productive_manta",
+      "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "7",
+      "when": 1785875321754,
+      "tag": "0005_dusty_daimon_hellstrom",
+      "breakpoints": true
     }
   ]
 }

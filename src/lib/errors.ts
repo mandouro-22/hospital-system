@@ -36,4 +36,24 @@ export class AppError extends Error {
   static internal(message = "Internal server error") {
     return new AppError(500, "INTERNAL_ERROR", message);
   }
+
+  static emailAlreadyExists(message = "Email already exists") {
+    return new AppError(409, "EMAIL_ALREADY_EXISTS", message);
+  }
+
+  static employeeCodeAlreadyExists(message = "Employee code already exists") {
+    return new AppError(409, "EMPLOYEE_CODE_ALREADY_EXISTS", message);
+  }
+
+  static licenseNumberAlreadyExists(message = "License number already exists") {
+    return new AppError(409, "LICENSE_NUMBER_ALREADY_EXISTS", message);
+  }
+
+  static departmentNotFound(message = "Department not found") {
+    return new AppError(404, "DEPARTMENT_NOT_FOUND", message);
+  }
+
+  static invalidRole(message = "Invalid role") {
+    return new AppError(400, "INVALID_ROLE", message);
+  }
 }

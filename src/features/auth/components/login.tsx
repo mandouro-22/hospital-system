@@ -28,10 +28,12 @@ export function Login() {
   });
 
   const onSubmit = (data: LoginInput) => {
+    console.log(data);
+
     login.mutate(data, {
       onSuccess: () => {
         toast.success("Logged in successfully");
-        router.push("/");
+        router.push("/admin/users");
       },
       onError: (error) => {
         toast.error(error.message);

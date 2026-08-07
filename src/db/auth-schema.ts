@@ -1,4 +1,4 @@
-import { relations } from "drizzle-orm";
+import { relations, sql } from "drizzle-orm";
 import {
   pgTable,
   text,
@@ -9,15 +9,16 @@ import {
   index,
 } from "drizzle-orm/pg-core";
 
-export const user = pgTable("user", {
+export const users = pgTable("user", {
   id: uuid("id").primaryKey().defaultRandom(),
-  name: text("name").notNull(),
   email: text("email").notNull().unique(),
+  name: text("name").notNull(),
   emailVerified: boolean("email_verified").default(false).notNull(),
   image: text("image"),
   role: varchar("role", { length: 50 }).notNull(),
   status: varchar("status", { length: 20 }).default("active").notNull(),
   lastLogin: timestamp("last_login", { withTimezone: true }),
+  createdBy: uuid("created_by"),
   createdAt: timestamp("created_at", { withTimezone: true })
     .defaultNow()
     .notNull(),
@@ -44,7 +45,7 @@ export const session = pgTable(
     userAgent: text("user_agent"),
     userId: uuid("user_id")
       .notNull()
-      .references(() => user.id, { onDelete: "cascade" }),
+      .references(() => users.id, { onDelete: "cascade" }),
     deletedAt: timestamp("deleted_at", { withTimezone: true }),
   },
   (table) => [index("session_userId_idx").on(table.userId)],
@@ -58,7 +59,7 @@ export const account = pgTable(
     providerId: text("provider_id").notNull(),
     userId: uuid("user_id")
       .notNull()
-      .references(() => user.id, { onDelete: "cascade" }),
+      .references(() => users.id, { onDelete: "cascade" }),
     accessToken: text("access_token"),
     refreshToken: text("refresh_token"),
     idToken: text("id_token"),
@@ -100,21 +101,103 @@ export const verification = pgTable(
   (table) => [index("verification_identifier_idx").on(table.identifier)],
 );
 
-export const userRelations = relations(user, ({ many }) => ({
+export const staff = pgTable("staff", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  userId: uuid("user_id")
+    .notNull()
+    .references(() => users.id, { onDelete: "cascade" }),
+  employeeCode: varchar("employee_code", { length: 50 }).notNull().unique(),
+  departmentId: uuid("department_id").notNull(),
+  jobTitle: varchar("job_title", { length: 100 }).notNull(),
+  hireDate: timestamp("hire_date", { withTimezone: true }).notNull(),
+  createdAt: timestamp("created_at", { withTimezone: true })
+    .defaultNow()
+    .notNull(),
+  updatedAt: timestamp("updated_at", { withTimezone: true })
+    .defaultNow()
+    .$onUpdate(() => new Date())
+    .notNull(),
+});
+
+export const doctor = pgTable("doctor", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  userId: uuid("user_id")
+    .notNull()
+    .references(() => users.id, { onDelete: "cascade" }),
+  specialization: varchar("specialization", { length: 100 }).notNull(),
+  licenseNumber: varchar("license_number", { length: 50 }).notNull().unique(),
+  doctorNumber: varchar("doctor_number", { length: 20 })
+    .notNull()
+    .unique()
+    .default(sql`'DOC-' || lpad(nextval('doctor_number_seq')::text, 6, '0')`),
+  consultationDuration: varchar("consultation_duration", {
+    length: 20,
+  }).notNull(),
+  createdAt: timestamp("created_at", { withTimezone: true })
+    .defaultNow()
+    .notNull(),
+  updatedAt: timestamp("updated_at", { withTimezone: true })
+    .defaultNow()
+    .$onUpdate(() => new Date())
+    .notNull(),
+});
+
+export const department = pgTable("department", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  name: varchar("name", { length: 100 }).notNull().unique(),
+  description: text("description"),
+  createdAt: timestamp("created_at", { withTimezone: true })
+    .defaultNow()
+    .notNull(),
+  updatedAt: timestamp("updated_at", { withTimezone: true })
+    .defaultNow()
+    .$onUpdate(() => new Date())
+    .notNull(),
+});
+
+export const usersRelations = relations(users, ({ many, one }) => ({
   sessions: many(session),
   accounts: many(account),
+  staff: many(staff),
+  doctor: many(doctor),
+  createdByUser: one(users, {
+    fields: [users.createdBy],
+    references: [users.id],
+  }),
 }));
 
 export const sessionRelations = relations(session, ({ one }) => ({
-  user: one(user, {
+  user: one(users, {
     fields: [session.userId],
-    references: [user.id],
+    references: [users.id],
   }),
 }));
 
 export const accountRelations = relations(account, ({ one }) => ({
-  user: one(user, {
+  user: one(users, {
     fields: [account.userId],
-    references: [user.id],
+    references: [users.id],
   }),
+}));
+
+export const staffRelations = relations(staff, ({ one }) => ({
+  user: one(users, {
+    fields: [staff.userId],
+    references: [users.id],
+  }),
+  department: one(department, {
+    fields: [staff.departmentId],
+    references: [department.id],
+  }),
+}));
+
+export const doctorRelations = relations(doctor, ({ one }) => ({
+  user: one(users, {
+    fields: [doctor.userId],
+    references: [users.id],
+  }),
+}));
+
+export const departmentRelations = relations(department, ({ many }) => ({
+  staff: many(staff),
 }));

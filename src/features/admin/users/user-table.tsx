@@ -1,7 +1,6 @@
 "use client";
 
 import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
 import {
   Table,
   TableBody,
@@ -15,9 +14,9 @@ import type { SanitizedUserDTO } from "@/features/auth/types/auth.types";
 import { formatDate, statusVariant, initials } from "@/lib/utils";
 import type { SortableColumn, SortOrder } from "./user-management";
 import { UserRowActions } from "./user-row-actions";
-import { UserTableSkeleton } from "./ui/table-skeleton";
-import { UserTableError } from "./ui/table-error";
-import { UserTableEmpty } from "./ui/table-empty";
+import { UserTableSkeleton } from "../components/ui/table-skeleton";
+import { UserTableError } from "../components/ui/table-error";
+import { UserTableEmpty } from "../components/ui/table-empty";
 // import { SortableHeader } from "./ui/table-sort";
 
 interface UserTableProps {
@@ -44,9 +43,6 @@ export function UserTable({
   data,
   total,
   isPending,
-  sortBy,
-  sortOrder,
-  onSort,
   onRefresh,
   error,
 }: UserTableProps) {
@@ -71,7 +67,11 @@ export function UserTable({
                 onSort={onSort}
               />
             ))} */}
+            <TableHead>Name</TableHead>
+            <TableHead>Email</TableHead>
+            <TableHead>Role</TableHead>
             <TableHead>Status</TableHead>
+            <TableHead>Created AT</TableHead>
             <TableHead>Last Login</TableHead>
             <TableHead className="text-end">Actions</TableHead>
           </TableRow>

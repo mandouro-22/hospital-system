@@ -3,6 +3,15 @@ import { db } from "@/db";
 import { session } from "@/db/auth-schema";
 
 export const SessionRepository = {
+  async findActiveByToken(token: string) {
+    const rows = await db
+      .select()
+      .from(session)
+      .where(and(eq(session.token, token), isNull(session.deletedAt)))
+      .limit(1);
+    return rows[0] ?? null;
+  },
+
   async findActiveByUserId(userId: string) {
     const rows = await db
       .select()

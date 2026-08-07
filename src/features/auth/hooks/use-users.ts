@@ -1,6 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { apiClient, parseApiResponse } from "@/lib/api-client";
-import type { ApiPaginatedResponse, ApiResponse, SanitizedUserDTO } from "../types/auth.types";
+import type { ApiPaginatedResponse, ApiResponse, CreatedUserDTO, SanitizedUserDTO } from "../types/auth.types";
 import type { PaginationInput } from "../validations/pagination.schema";
 import type { CreateUserInput } from "../validations/create-user.schema";
 import type { UpdateUserInput } from "../validations/update-user.schema";
@@ -32,7 +32,7 @@ export function useCreateUser() {
   return useMutation({
     mutationFn: async (input: CreateUserInput) => {
       const res = await apiClient.api.users.$post({ json: input });
-      return parseApiResponse<ApiResponse<SanitizedUserDTO>>(res);
+      return parseApiResponse<ApiResponse<CreatedUserDTO>>(res);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["users"] });

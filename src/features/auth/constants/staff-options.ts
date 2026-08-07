@@ -1,0 +1,42 @@
+export const SPECIALIZATIONS = [
+  "Cardiology",
+  "Dermatology",
+  "Endocrinology",
+  "Gastroenterology",
+  "Hematology",
+  "Infectious Disease",
+  "Internal Medicine",
+  "Nephrology",
+  "Neurology",
+  "Oncology",
+  "Ophthalmology",
+  "Orthopedics",
+  "Otolaryngology (ENT)",
+  "Pediatrics",
+  "Psychiatry",
+  "Pulmonology",
+  "Rheumatology",
+  "Urology",
+  "General Surgery",
+  "Family Medicine",
+  "Emergency Medicine",
+  "Anesthesiology",
+  "Radiology",
+  "Pathology",
+  "Obstetrics & Gynecology",
+] as const;
+
+export const CONSULTATION_DURATIONS = ["15 min", "30 min", "45 min", "60 min"] as const;
+
+export const JOB_TITLES = [
+  "Consultant",
+  "Senior Consultant",
+  "Specialist",
+  "Senior Specialist",
+  "Resident",
+  "Chief Resident",
+  "Fellow",
+  "Attending Physician",
+  "Head of Department",
+  "Clinical Director",
+] as const;

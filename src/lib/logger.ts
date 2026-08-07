@@ -16,4 +16,8 @@ export const logger = {
   error(event: string, details?: Record<string, unknown>) {
     console.error(`${timestamp()} ${LOG_PREFIX} ERROR ${event}`, details ?? "");
   },
+
+  debug(event: string, details?: Record<string, unknown>) {
+    console.debug(`${timestamp()} ${LOG_PREFIX} DEBUG ${event}`, details ?? "");
+  },
 };
