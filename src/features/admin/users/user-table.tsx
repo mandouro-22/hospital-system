@@ -1,7 +1,6 @@
 "use client";
 
 import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
 import {
   Table,
   TableBody,
@@ -44,9 +43,6 @@ export function UserTable({
   data,
   total,
   isPending,
-  sortBy,
-  sortOrder,
-  onSort,
   onRefresh,
   error,
 }: UserTableProps) {
@@ -71,7 +67,11 @@ export function UserTable({
                 onSort={onSort}
               />
             ))} */}
+            <TableHead>Name</TableHead>
+            <TableHead>Email</TableHead>
+            <TableHead>Role</TableHead>
             <TableHead>Status</TableHead>
+            <TableHead>Created AT</TableHead>
             <TableHead>Last Login</TableHead>
             <TableHead className="text-end">Actions</TableHead>
           </TableRow>
