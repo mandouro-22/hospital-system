@@ -7,6 +7,7 @@ import {
   boolean,
   varchar,
   index,
+  integer,
 } from "drizzle-orm/pg-core";
 
 export const users = pgTable("user", {
@@ -155,6 +156,23 @@ export const department = pgTable("department", {
     .notNull(),
 });
 
+export const doctorSchedule = pgTable("doctor_schedule", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  doctorId: uuid("doctor_id")
+    .notNull()
+    .references(() => doctor.id, { onDelete: "cascade" }),
+  dayOfWeek: integer("day_of_week").notNull(),
+  startTime: varchar("start_time", { length: 5 }).notNull(),
+  endTime: varchar("end_time", { length: 5 }).notNull(),
+  createdAt: timestamp("created_at", { withTimezone: true })
+    .defaultNow()
+    .notNull(),
+  updatedAt: timestamp("updated_at", { withTimezone: true })
+    .defaultNow()
+    .$onUpdate(() => new Date())
+    .notNull(),
+});
+
 export const usersRelations = relations(users, ({ many, one }) => ({
   sessions: many(session),
   accounts: many(account),
@@ -191,10 +209,18 @@ export const staffRelations = relations(staff, ({ one }) => ({
   }),
 }));
 
-export const doctorRelations = relations(doctor, ({ one }) => ({
+export const doctorRelations = relations(doctor, ({ one, many }) => ({
   user: one(users, {
     fields: [doctor.userId],
     references: [users.id],
+  }),
+  schedule: many(doctorSchedule),
+}));
+
+export const doctorScheduleRelations = relations(doctorSchedule, ({ one }) => ({
+  doctor: one(doctor, {
+    fields: [doctorSchedule.doctorId],
+    references: [doctor.id],
   }),
 }));
 

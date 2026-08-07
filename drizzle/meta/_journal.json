@@ -43,6 +43,13 @@
       "when": 1785875321754,
       "tag": "0005_dusty_daimon_hellstrom",
       "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "7",
+      "when": 1786097819663,
+      "tag": "0006_add-doctor-schedule",
+      "breakpoints": true
     }
   ]
 }
