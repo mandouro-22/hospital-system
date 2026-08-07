@@ -8,6 +8,7 @@ import {
   LayoutDashboard,
   LogOut,
   Search,
+  Stethoscope,
   UserRound,
   Users,
   type LucideIcon,
@@ -68,6 +69,11 @@ const navigation: NavItem[] = [
     title: "Users",
     url: "/admin/users",
     icon: Users,
+  },
+  {
+    title: "Doctors",
+    url: "/admin/doctors",
+    icon: Stethoscope,
   },
 ];
 
