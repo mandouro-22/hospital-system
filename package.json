@@ -6,9 +6,6 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
-    "drizzle-push": "bunx drizzle-kit push",
-    "drizzle-generate": "bunx drizzle-kit generate",
-    "drizzle-migrate": "bunx drizzle-kit migrate",
     "seed:admin": "tsx src/script/seed-admin.ts",
     "seed:departments": "tsx src/script/seed-departments.ts"
   },

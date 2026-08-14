@@ -9,12 +9,12 @@ import type { UserProfile, PaginatedResult, Role } from "../types/auth.types";
 import { db } from "@/db";
 import { eq } from "drizzle-orm";
 import {
-  users,
+user as   users,
   staff,
   doctor,
   receptionist,
   department,
-} from "@/db/auth-schema";
+} from "@/db/schema";
 
 export type CreatedUserResult = {
   user: UserProfile;
@@ -111,7 +111,7 @@ export const UserService = {
           .set({
             createdBy,
             status: "pending",
-            updatedAt: new Date(),
+            updatedAt: new Date().toISOString(),
           })
           .where(eq(users.id, userId!));
 
@@ -121,7 +121,7 @@ export const UserService = {
             employeeCode: input.employeeCode,
             departmentId: input.departmentId,
             jobTitle: input.jobTitle,
-            hireDate: input.hireDate,
+            hireDate: input.hireDate.toISOString(),
           });
         }
 

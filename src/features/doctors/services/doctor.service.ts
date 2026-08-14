@@ -1,6 +1,6 @@
 import { eq } from "drizzle-orm";
 import { db } from "@/db";
-import { doctor, department } from "@/db/auth-schema";
+import { doctor, department } from "@/db/schema";
 import { AppError } from "@/lib/errors";
 import { logger } from "@/lib/logger";
 import { DoctorRepository } from "../repositories/doctor.repository";

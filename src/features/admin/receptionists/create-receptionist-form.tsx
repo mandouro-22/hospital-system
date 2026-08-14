@@ -7,7 +7,7 @@ import { toast } from "sonner";
 import { Loader2 } from "lucide-react";
 import { useCreateUser } from "@/features/auth/hooks/use-users";
 import { useDepartments } from "@/features/departments/hooks/use-departments";
-import { JOB_TITLES } from "@/features/auth/constants/staff-options";
+import { RECEPTIONIST_JOB_TITLES } from "@/features/auth/constants/staff-options";
 import { createUserSchema } from "@/features/auth/validations/create-user.schema";
 import type { CreateUserInput } from "@/features/auth/validations/create-user.schema";
 import { Input } from "@/components/ui/input";
@@ -208,7 +208,7 @@ export default function CreateReceptionistForm() {
                   {renderSelect(
                     "jobTitle",
                     "Job Title *",
-                    JOB_TITLES.map((value) => ({ value, label: value })),
+                    RECEPTIONIST_JOB_TITLES.map((value) => ({ value, label: value })),
                     "Select a job title",
                   )}
                   {renderField("hireDate", "Hire Date *", "date", "")}

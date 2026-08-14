@@ -2,10 +2,10 @@ import { and, count, eq, isNull, like, or, asc } from "drizzle-orm";
 import { db } from "@/db";
 import {
   receptionist as receptionistTable,
-  users,
+  user as users,
   staff,
   department,
-} from "@/db/auth-schema";
+} from "@/db/schema";
 import type {
   UserStatus,
   PaginatedResult,

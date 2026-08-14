@@ -1,6 +1,6 @@
 import { asc } from "drizzle-orm";
 import { db } from "@/db";
-import { department } from "@/db/auth-schema";
+import { department } from "@/db/schema";
 import type { DepartmentOption } from "../types/department.types";
 
 export const DepartmentRepository = {

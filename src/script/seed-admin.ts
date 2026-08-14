@@ -2,7 +2,7 @@ import "dotenv/config";
 import { eq } from "drizzle-orm";
 import { hashPassword } from "better-auth/crypto";
 import { db } from "../db";
-import { account, users } from "../db/auth-schema";
+import { account, user as users } from "../db/schema";
 
 const name = process.env.ADMIN_NAME?.trim() || "System Administrator";
 const email = (
@@ -67,6 +67,7 @@ async function seedAdmin() {
     accountId: admin.id,
     providerId: "credential",
     password: hashedPassword,
+    updatedAt: new Date().toISOString(),
   });
 
   console.log("Inserted admin account credentials.");

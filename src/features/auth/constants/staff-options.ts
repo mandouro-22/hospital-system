@@ -40,3 +40,10 @@ export const JOB_TITLES = [
   "Head of Department",
   "Clinical Director",
 ] as const;
+export const RECEPTIONIST_JOB_TITLES = [
+  "Receptionist",
+  "Senior Receptionist",
+  "Front Desk Supervisor",
+  "Patient Coordinator",
+  "Appointment Scheduler",
+] as const;

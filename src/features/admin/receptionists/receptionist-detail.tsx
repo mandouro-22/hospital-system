@@ -27,6 +27,9 @@ export default function ReceptionistDetail({
     error: receptionistError,
   } = useReceptionist(receptionistId);
 
+
+  
+
   if (receptionistError) {
     return (
       <UserTableError

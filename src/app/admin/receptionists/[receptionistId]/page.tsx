@@ -1,10 +1,14 @@
 import React from "react";
 import ReceptionistDetail from "@/features/admin/receptionists/receptionist-detail";
+import { notFound } from "next/navigation";
 
-export default function ReceptionistDetailPage({
+export default async function ReceptionistDetailPage({
   params,
 }: {
   params: { receptionistId: string };
 }) {
-  return <ReceptionistDetail receptionistId={params.receptionistId} />;
+
+  const { receptionistId } = await params;
+
+  return <ReceptionistDetail receptionistId={receptionistId} />;
 }
