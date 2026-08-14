@@ -13,6 +13,7 @@ export function toReceptionistListDTO(
     receptionistNumber: record.receptionistNumber,
     fullName: record.name,
     email: record.email,
+    departmentId: record.departmentId,
     departmentName: record.departmentName,
     status: record.status,
   };

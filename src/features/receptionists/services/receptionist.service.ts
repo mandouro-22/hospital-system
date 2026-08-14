@@ -1,6 +1,3 @@
-import { eq } from "drizzle-orm";
-import { db } from "@/db";
-import { users, staff, department, receptionist } from "@/db/auth-schema";
 import { AppError } from "@/lib/errors";
 import { logger } from "@/lib/logger";
 import { ReceptionistRepository } from "../repositories/receptionist.repository";
@@ -8,7 +5,7 @@ import type {
   ReceptionistListInput,
   UpdateReceptionistInput,
 } from "../validations/receptionist.schema";
-import type { ReceptionistRecord } from "../repositories/receptionist.repository";
+import type { ReceptionistRecord } from "../types/receptionist.types";
 
 export const ReceptionistService = {
   async findAll(params: ReceptionistListInput) {

@@ -21,3 +21,17 @@ export type ReceptionistFilters = {
   departmentId?: string;
   status?: UserStatus;
 };
+
+export type ReceptionistRecord = {
+  id: string;
+  userId: string;
+  receptionistNumber: string;
+  name: string;
+  email: string;
+  status: UserStatus;
+  image: string | null;
+  departmentId: string | null;
+  departmentName: string | null;
+  jobTitle: string | null;
+  employeeCode: string | null;
+};
