@@ -1,6 +1,6 @@
 import { eq } from "drizzle-orm";
 import { db } from "@/db";
-import { account } from "@/db/auth-schema";
+import { account } from "@/db/schema";
 
 export const AccountRepository = {
   async findByUserId(userId: string) {

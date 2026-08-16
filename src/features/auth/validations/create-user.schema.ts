@@ -2,6 +2,7 @@ import { z } from "zod";
 import {
   CONSULTATION_DURATIONS,
   JOB_TITLES,
+  RECEPTIONIST_JOB_TITLES,
   SPECIALIZATIONS,
 } from "../constants/staff-options";
 
@@ -20,7 +21,7 @@ export const createUserSchema = z.discriminatedUnion("role", [
     role: z.literal("Receptionist"),
     departmentId: z.string().uuid(),
     employeeCode: z.string().trim().min(2).max(50),
-    jobTitle: z.enum(JOB_TITLES),
+    jobTitle: z.enum(RECEPTIONIST_JOB_TITLES),
     hireDate: z.coerce.date(),
   }),
 

@@ -1,6 +1,6 @@
 import { and, count, eq, isNull, like, or, asc, sql } from "drizzle-orm";
 import { db } from "@/db";
-import { doctor, users, staff, department, doctorSchedule } from "@/db/auth-schema";
+import { doctor, user as users, staff, department, doctorSchedule } from "@/db/schema";
 import type { UserStatus, PaginatedResult } from "@/features/auth/types/auth.types";
 import type { DoctorListInput } from "../validations/doctor.schema";
 import type { DoctorScheduleDTO } from "../types/doctor.types";
@@ -177,14 +177,14 @@ export const DoctorRepository = {
   async updateDepartment(userId: string, departmentId: string): Promise<void> {
     await db
       .update(staff)
-      .set({ departmentId, updatedAt: new Date() })
+      .set({ departmentId, updatedAt: new Date().toISOString() })
       .where(eq(staff.userId, userId));
   },
 
   async updateUserName(userId: string, name: string): Promise<void> {
     await db
       .update(users)
-      .set({ name, updatedAt: new Date() })
+      .set({ name, updatedAt: new Date().toISOString() })
       .where(eq(users.id, userId));
   },
 };

@@ -1,6 +1,6 @@
 import { eq, and, isNull } from "drizzle-orm";
 import { db } from "@/db";
-import { session } from "@/db/auth-schema";
+import { session } from "@/db/schema";
 
 export const SessionRepository = {
   async findActiveByToken(token: string) {
@@ -38,6 +38,6 @@ export const SessionRepository = {
       )
       .orderBy(session.createdAt)
       .limit(1);
-    return rows.length > 0 ? rows[0].createdAt : null;
+    return rows.length > 0 ? new Date(rows[0].createdAt) : null;
   },
-};
+}; 

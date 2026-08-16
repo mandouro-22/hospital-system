@@ -3,11 +3,11 @@ import { drizzleAdapter } from "better-auth/adapters/drizzle";
 import { drizzle } from "drizzle-orm/node-postgres";
 import { Pool } from "pg";
 import {
-  users,
+  user as users,  
   session,
   account,
   verification,
-} from "@/db/auth-schema";
+} from "@/db/schema";
 
 const db = drizzle(new Pool({ connectionString: process.env.DATABASE_URL }));
 

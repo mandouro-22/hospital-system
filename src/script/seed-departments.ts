@@ -1,7 +1,7 @@
 import "dotenv/config";
 import { randomUUID } from "crypto";
 import { db } from "../db";
-import { department } from "../db/auth-schema";
+import { department } from "../db/schema";
 
 const departmentNames = [
   "Cardiology Department",

@@ -12,7 +12,7 @@ import {
   inArray,
 } from "drizzle-orm";
 import { db } from "@/db";
-import { users } from "@/db/auth-schema";
+import {user as users } from "@/db/schema";
 import type {
   UserProfile,
   PaginatedResult,
@@ -30,10 +30,10 @@ function toProfile(u: typeof users.$inferSelect): UserProfile {
     image: u.image,
     role: u.role as Role,
     status: u.status as UserStatus,
-    lastLogin: u.lastLogin,
-    createdAt: u.createdAt,
-    updatedAt: u.updatedAt,
-    deletedAt: u.deletedAt,
+    lastLogin: u.lastLogin ? new Date(u.lastLogin) : null,
+    createdAt: u.createdAt ? new Date(u.createdAt) : new Date(),
+    updatedAt: u.updatedAt ? new Date(u.updatedAt) : new Date(),
+    deletedAt: u.deletedAt ? new Date(u.deletedAt) : null,
   };
 }
 
@@ -164,7 +164,7 @@ export const UserRepository = {
   async softDelete(id: string): Promise<void> {
     await db
       .update(users)
-      .set({ deletedAt: new Date(), updatedAt: new Date() })
+      .set({ deletedAt: new Date().toISOString(), updatedAt: new Date().toISOString() })
       .where(eq(users.id, id));
   },
 

@@ -141,7 +141,12 @@ export const AuthService = {
         createdAt: user.createdAt,
         updatedAt: user.updatedAt,
       },
-      session,
+      session: {
+        ...session,
+        expiresAt: new Date(session.expiresAt),
+        createdAt: new Date(session.createdAt),
+        updatedAt: new Date(session.updatedAt),
+      },
     };
     logger.debug("login.response_parsed", {
       userId: authSession.user.id,
