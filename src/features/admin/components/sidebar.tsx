@@ -6,6 +6,7 @@ import { usePathname, useRouter } from "next/navigation";
 import {
   ChevronsUpDown,
   HandHelping,
+  HeartPulse,
   LayoutDashboard,
   LogOut,
   Search,
@@ -76,6 +77,11 @@ const navigation: NavItem[] = [
     title: "Receptionists",
     url: "/admin/receptionists",
     icon: HandHelping,
+  },
+  {
+    title: "Patients",
+    url: "/admin/patients",
+    icon: HeartPulse,
   },
 ];
 

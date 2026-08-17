@@ -4,6 +4,7 @@ import { sql } from "drizzle-orm"
 
 export const doctorNumberSeq = pgSequence("doctor_number_seq", {  startWith: "1", increment: "1", minValue: "1", maxValue: "9223372036854775807", cache: "1", cycle: false })
 export const receptionistNumberSeq = pgSequence("receptionist_number_seq", {  startWith: "1", increment: "1", minValue: "1", maxValue: "9223372036854775807", cache: "1", cycle: false })
+export const patientNumberSeq = pgSequence("patient_number_seq", {  startWith: "1", increment: "1", minValue: "1", maxValue: "9223372036854775807", cache: "1", cycle: false })
 
 export const doctorSchedule = pgTable("doctor_schedule", {
 	id: uuid().defaultRandom().primaryKey().notNull(),
@@ -148,4 +149,25 @@ export const receptionist = pgTable("receptionist", {
 			name: "receptionist_user_id_fkey"
 		}).onDelete("cascade"),
 	unique("receptionist_receptionist_number_key").on(table.receptionistNumber),
+]);
+
+export const patient = pgTable("patient", {
+	id: uuid().defaultRandom().primaryKey().notNull(),
+	userId: uuid("user_id").notNull(),
+	phn: varchar({ length: 50 }).notNull(),
+	patientNumber: varchar("patient_number", { length: 20 }).default(sql`(\'PAT-\'::text || lpad((nextval(\'patient_number_seq\'::regclass))::text, 6, \'0\'::text))`).notNull(),
+	phone: varchar({ length: 20 }),
+	gender: varchar({ length: 20 }),
+	dateOfBirth: timestamp("date_of_birth", { withTimezone: true, mode: 'string' }),
+	address: text(),
+	createdAt: timestamp("created_at", { withTimezone: true, mode: 'string' }).defaultNow().notNull(),
+	updatedAt: timestamp("updated_at", { withTimezone: true, mode: 'string' }).defaultNow().notNull(),
+}, (table) => [
+	uniqueIndex("patient_patient_number_unique").using("btree", table.patientNumber.asc().nullsLast().op("text_ops")),
+	foreignKey({
+			columns: [table.userId],
+			foreignColumns: [user.id],
+			name: "patient_user_id_user_id_fk"
+		}).onDelete("cascade"),
+	unique("patient_phn_unique").on(table.phn),
 ]);
