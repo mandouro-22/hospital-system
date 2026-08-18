@@ -1,13 +1,27 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
+import Link from "next/link";
+import { PlusIcon } from "lucide-react";
 import { usePatients } from "@/features/patients/hooks/use-patients";
 import type { PatientListInput } from "@/features/patients/validations/patient.schema";
 import type { UserStatus } from "@/features/auth/types/auth.types";
 import { Card } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
 import { PatientFilters } from "./patient-filters";
 import { PatientTable } from "./patient-table";
 import { PatientPagination } from "./patient-pagination";
+
+function AddPatientButton() {
+  return (
+    <Button asChild>
+      <Link href="/admin/patients/add">
+        <PlusIcon />
+        Add Patient
+      </Link>
+    </Button>
+  );
+}
 
 export default function PatientManagement() {
   const [search, setSearch] = useState("");
@@ -55,6 +69,7 @@ export default function PatientManagement() {
             Manage and review registered patients.
           </p>
         </div>
+        <AddPatientButton />
       </div>
 
       <PatientFilters

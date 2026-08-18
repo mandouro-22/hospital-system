@@ -49,6 +49,10 @@ export class AppError extends Error {
     return new AppError(409, "LICENSE_NUMBER_ALREADY_EXISTS", message);
   }
 
+  static phnAlreadyExists(message = "PHN already exists") {
+    return new AppError(409, "PHN_ALREADY_EXISTS", message);
+  }
+
   static departmentNotFound(message = "Department not found") {
     return new AppError(404, "DEPARTMENT_NOT_FOUND", message);
   }

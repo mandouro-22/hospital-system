@@ -7,6 +7,7 @@ import type {
 import type {
   PatientListInput,
   PatientStatusInput,
+  CreatePatientInput,
 } from "../validations/patient.schema";
 import type {
   PatientDetailDTO,
@@ -33,6 +34,21 @@ export function usePatient(id: string) {
       return parseApiResponse<ApiResponse<PatientDetailDTO>>(res);
     },
     enabled: Boolean(id),
+  });
+}
+
+export function useCreatePatientMutation() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async (input: CreatePatientInput) => {
+      const res = await apiClient.api.patients.$post({ json: input });
+      return parseApiResponse<ApiResponse<PatientDetailDTO>>(res);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["patients"] });
+      queryClient.invalidateQueries({ queryKey: ["users"] });
+    },
   });
 }
 

@@ -1,7 +1,9 @@
 import { and, asc, count, eq, isNull, like, or, sql } from "drizzle-orm";
 import { alias } from "drizzle-orm/pg-core";
+import { hashPassword } from "better-auth/crypto";
 import { db } from "@/db";
 import {
+  account as accountTable,
   patient as patientTable,
   user as users,
 } from "@/db/schema";
@@ -10,6 +12,8 @@ import type {
   PaginatedResult,
 } from "@/features/auth/types/auth.types";
 import type { PatientListInput } from "../validations/patient.schema";
+
+export type Transaction = Parameters<Parameters<typeof db.transaction>[0]>[0];
 
 export type PatientRecord = {
   id: string;
@@ -165,5 +169,90 @@ export const PatientRepository = {
       .update(users)
       .set({ status, updatedAt: new Date().toISOString() })
       .where(eq(users.id, userId));
+  },
+
+  async findPatientByPHN(phn: string): Promise<{ id: string } | null> {
+    const rows = await db
+      .select({ id: patientTable.id })
+      .from(patientTable)
+      .where(eq(patientTable.phn, phn))
+      .limit(1);
+    return rows.length > 0 ? rows[0] : null;
+  },
+
+  async existsByPHN(phn: string): Promise<boolean> {
+    return (await this.findPatientByPHN(phn)) !== null;
+  },
+
+  async createUser(
+    data: {
+      name: string;
+      email: string;
+      password: string;
+      role: string;
+      status: string;
+      createdBy: string;
+    },
+    tx: Transaction,
+  ): Promise<{ id: string }> {
+    const hashedPassword = await hashPassword(data.password);
+
+    const [createdUser] = await tx
+      .insert(users)
+      .values({
+        name: data.name,
+        email: data.email,
+        role: data.role,
+        status: data.status,
+        createdBy: data.createdBy,
+      })
+      .returning({ id: users.id });
+
+    if (!createdUser) {
+      throw new Error("Failed to create patient user");
+    }
+
+    await tx.insert(accountTable).values({
+      userId: createdUser.id,
+      accountId: createdUser.id,
+      providerId: "credential",
+      password: hashedPassword,
+      updatedAt: new Date().toISOString(),
+    });
+
+    return { id: createdUser.id };
+  },
+
+  async createPatient(
+    data: {
+      userId: string;
+      phn: string;
+      phone: string;
+      gender: string | null;
+      dateOfBirth: string | null;
+      address: string;
+    },
+    tx: Transaction,
+  ): Promise<{ id: string; patientNumber: string }> {
+    const [createdPatient] = await tx
+      .insert(patientTable)
+      .values({
+        userId: data.userId,
+        phn: data.phn,
+        phone: data.phone,
+        gender: data.gender,
+        dateOfBirth: data.dateOfBirth,
+        address: data.address,
+      })
+      .returning({
+        id: patientTable.id,
+        patientNumber: patientTable.patientNumber,
+      });
+
+    if (!createdPatient) {
+      throw new Error("Failed to create patient profile");
+    }
+
+    return createdPatient;
   },
 };
