@@ -13,6 +13,7 @@ import {
   Stethoscope,
   UserRound,
   Users,
+  Building2,
   type LucideIcon,
 } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -82,6 +83,21 @@ const navigation: NavItem[] = [
     title: "Patients",
     url: "/admin/patients",
     icon: HeartPulse,
+  },
+  {
+    title: "Hospital Configuration",
+    url: "/admin/departments",
+    icon: Building2,
+    children: [
+      {
+        title: "Departments",
+        url: "/admin/departments",
+      },
+      {
+        title: "Specialties",
+        url: "/admin/specialties",
+      },
+    ],
   },
 ];
 

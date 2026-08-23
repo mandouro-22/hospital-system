@@ -76,10 +76,22 @@ export const department = pgTable("department", {
 	id: varchar({ length: 50 }).primaryKey().notNull(),
 	name: varchar({ length: 100 }).notNull(),
 	description: text(),
+	status: varchar({ length: 20 }).default('active').notNull(),
 	createdAt: timestamp("created_at", { withTimezone: true, mode: 'string' }).defaultNow().notNull(),
 	updatedAt: timestamp("updated_at", { withTimezone: true, mode: 'string' }).defaultNow().notNull(),
 }, (table) => [
 	unique("department_name_unique").on(table.name),
+]);
+
+export const specialty = pgTable("specialty", {
+	id: varchar({ length: 50 }).primaryKey().notNull(),
+	name: varchar({ length: 100 }).notNull(),
+	description: text(),
+	status: varchar({ length: 20 }).default('active').notNull(),
+	createdAt: timestamp("created_at", { withTimezone: true, mode: 'string' }).defaultNow().notNull(),
+	updatedAt: timestamp("updated_at", { withTimezone: true, mode: 'string' }).defaultNow().notNull(),
+}, (table) => [
+	unique("specialty_name_unique").on(table.name),
 ]);
 
 export const user = pgTable("user", {

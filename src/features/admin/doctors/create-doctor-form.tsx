@@ -6,11 +6,11 @@ import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { Loader2 } from "lucide-react";
 import { useCreateUser } from "@/features/auth/hooks/use-users";
-import { useDepartments } from "@/features/departments/hooks/use-departments";
+import { useActiveDepartments } from "@/features/departments/hooks/use-departments";
+import { useActiveSpecialties } from "@/features/specialties/hooks/use-specialties";
 import {
   CONSULTATION_DURATIONS,
   JOB_TITLES,
-  SPECIALIZATIONS,
 } from "@/features/auth/constants/staff-options";
 import { createUserSchema } from "@/features/auth/validations/create-user.schema";
 import type { CreateUserInput } from "@/features/auth/validations/create-user.schema";
@@ -43,8 +43,14 @@ export default function CreateDoctorForm() {
     data: departmentsResponse,
     isPending: isDepartmentsLoading,
     error: departmentsError,
-  } = useDepartments();
+  } = useActiveDepartments();
+  const {
+    data: specialtiesResponse,
+    isPending: isSpecialtiesLoading,
+    error: specialtiesError,
+  } = useActiveSpecialties();
   const departments = departmentsResponse?.data ?? [];
+  const specialties = specialtiesResponse?.data ?? [];
 
   const methods = useForm<createDoctorValues>({
     resolver: zodResolver(createDoctorSchema),
@@ -58,6 +64,9 @@ export default function CreateDoctorForm() {
 
   const departmentsUnavailable =
     !departments.length || Boolean(departmentsError);
+
+  const specialtiesUnavailable =
+    !specialties.length || Boolean(specialtiesError);
 
   const onSubmit = async (values: createDoctorValues) => {
     try {
@@ -155,6 +164,11 @@ export default function CreateDoctorForm() {
     label: department.name,
   }));
 
+  const specialtyOptions = specialties.map((specialty) => ({
+    value: specialty.name,
+    label: specialty.name,
+  }));
+
   return (
     <div className="mx-auto max-w-2xl">
       <Card>
@@ -232,6 +246,19 @@ export default function CreateDoctorForm() {
                       creating doctors.
                     </p>
                   )}
+                {specialtiesError && (
+                  <p className="text-sm text-destructive">
+                    Unable to load specialties. Please try again.
+                  </p>
+                )}
+                {!isSpecialtiesLoading &&
+                  !specialtiesError &&
+                  !specialties.length && (
+                    <p className="text-sm text-destructive">
+                      No specialties are available. Seed specialties before
+                      creating doctors.
+                    </p>
+                  )}
               </div>
 
               <div className="space-y-6 rounded-lg border p-4">
@@ -241,9 +268,11 @@ export default function CreateDoctorForm() {
                 <div className="grid gap-4 sm:grid-cols-2">
                   {renderSelect(
                     "specialization",
-                    "Specialization *",
-                    SPECIALIZATIONS.map((value) => ({ value, label: value })),
-                    "Select a specialization",
+                    "Specialty *",
+                    specialtyOptions,
+                    isSpecialtiesLoading
+                      ? "Loading specialties..."
+                      : "Select a specialty",
                   )}
                   {renderField(
                     "licenseNumber",
@@ -274,7 +303,7 @@ export default function CreateDoctorForm() {
                 </Button>
                 <Button
                   type="submit"
-                  disabled={isSubmitting || departmentsUnavailable}
+                  disabled={isSubmitting || departmentsUnavailable || specialtiesUnavailable}
                 >
                   {isSubmitting && (
                     <Loader2 className="mr-2 size-4 animate-spin" />

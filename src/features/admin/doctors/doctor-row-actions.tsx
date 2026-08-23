@@ -30,8 +30,8 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { useUpdateDoctor } from "@/features/doctors/hooks/use-doctors";
-import { useDepartments } from "@/features/departments/hooks/use-departments";
-import { SPECIALIZATIONS } from "@/features/auth/constants/staff-options";
+import { useActiveDepartments } from "@/features/departments/hooks/use-departments";
+import { useActiveSpecialties } from "@/features/specialties/hooks/use-specialties";
 import type { DoctorListDTO } from "@/features/doctors/types/doctor.types";
 
 type DoctorRowActionsProps = {
@@ -47,8 +47,10 @@ export function DoctorRowActions({ doctor }: DoctorRowActionsProps) {
   );
   const [specialization, setSpecialization] = useState<string>(doctor.specialization);
   const updateDoctor = useUpdateDoctor();
-  const { data: departmentsResponse } = useDepartments();
+  const { data: departmentsResponse } = useActiveDepartments();
   const departments = departmentsResponse?.data ?? [];
+  const { data: specialtiesResponse } = useActiveSpecialties();
+  const specialties = specialtiesResponse?.data ?? [];
 
   const openEdit = () => {
     setName(doctor.fullName);
@@ -64,7 +66,7 @@ export function DoctorRowActions({ doctor }: DoctorRowActionsProps) {
         input: {
           name,
           ...(departmentId ? { departmentId } : {}),
-          specialization: specialization as (typeof SPECIALIZATIONS)[number],
+          specialization,
         },
       },
       {
@@ -126,12 +128,12 @@ export function DoctorRowActions({ doctor }: DoctorRowActionsProps) {
                 onValueChange={setSpecialization}
               >
                 <SelectTrigger id={`edit-specialty-${doctor.id}`} className="w-full">
-                  <SelectValue />
+                  <SelectValue placeholder="Keep current specialty" />
                 </SelectTrigger>
                 <SelectContent>
-                  {SPECIALIZATIONS.map((spec) => (
-                    <SelectItem key={spec} value={spec}>
-                      {spec}
+                  {specialties.map((spec) => (
+                    <SelectItem key={spec.name} value={spec.name}>
+                      {spec.name}
                     </SelectItem>
                   ))}
                 </SelectContent>

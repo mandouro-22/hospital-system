@@ -10,12 +10,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { SPECIALIZATIONS } from "@/features/auth/constants/staff-options";
-import type { DoctorListInput } from "@/features/doctors/validations/doctor.schema";
 import type { DepartmentOption } from "@/features/departments/types/department.types";
 import type { UserStatus } from "@/features/auth/types/auth.types";
-
-type Specialization = NonNullable<DoctorListInput["specialization"]>;
 
 const STATUS_OPTIONS: UserStatus[] = [
   "active",
@@ -31,8 +27,9 @@ type DoctorFiltersProps = {
   departments: DepartmentOption[];
   department: string | "all";
   onDepartmentChange: (value: string | "all") => void;
-  specialization: Specialization | "all";
-  onSpecializationChange: (value: Specialization | "all") => void;
+  specialties: SpecialtyOptionType[];
+  specialization: string | "all";
+  onSpecializationChange: (value: string | "all") => void;
   status: UserStatus | "all";
   onStatusChange: (value: UserStatus | "all") => void;
 };
@@ -43,6 +40,7 @@ export function DoctorFilters({
   departments,
   department,
   onDepartmentChange,
+  specialties,
   specialization,
   onSpecializationChange,
   status,
@@ -90,9 +88,7 @@ export function DoctorFilters({
         <Select
           value={specialization}
           onValueChange={(value) =>
-            onSpecializationChange(
-              value === "all" ? "all" : (value as Specialization),
-            )
+            onSpecializationChange(value === "all" ? "all" : value)
           }
         >
           <SelectTrigger id="specialization-filter" className="w-44">
@@ -100,9 +96,9 @@ export function DoctorFilters({
           </SelectTrigger>
           <SelectContent>
             <SelectItem value="all">All specialties</SelectItem>
-            {SPECIALIZATIONS.map((spec) => (
-              <SelectItem key={spec} value={spec}>
-                {spec}
+            {specialties.map((spec) => (
+              <SelectItem key={spec.id} value={spec.name}>
+                {spec.name}
               </SelectItem>
             ))}
           </SelectContent>

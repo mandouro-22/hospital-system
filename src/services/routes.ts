@@ -7,6 +7,7 @@ import { doctorRoutes } from "@/services/doctor.routes";
 import { userRoutes } from "@/services/user.routes";
 import { receptionistRoutes } from "@/services/receptionist.routes";
 import { patientRoutes } from "@/services/patient.routes";
+import { specialtyRoutes } from "@/services/specialty.routes";
 import type { AuthVariables } from "@/features/auth/middleware/auth.middleware";
 
 export const apiRoutes = new Hono<{ Variables: AuthVariables }>()
@@ -14,6 +15,7 @@ export const apiRoutes = new Hono<{ Variables: AuthVariables }>()
   .onError(errorHandler)
   .route("/auth", authRoutes)
   .route("/departments", departmentRoutes)
+  .route("/specialties", specialtyRoutes)
   .route("/doctors", doctorRoutes)
   .route("/users", userRoutes)
   .route("/receptionists", receptionistRoutes)

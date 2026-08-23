@@ -1,30 +1,30 @@
-export type DepartmentOption = {
+export type SpecialtyOption = {
   id: string;
   name: string;
 };
 
-export type DepartmentStatus = "active" | "inactive";
+export type SpecialtyStatus = "active" | "inactive";
 
-export interface DepartmentDTO {
+export interface SpecialtyDTO {
   id: string;
   name: string;
   description: string | null;
-  status: DepartmentStatus;
+  status: SpecialtyStatus;
   createdAt: string;
   updatedAt: string;
   doctorCount: number;
 }
 
-export interface DepartmentListDTO {
+export interface SpecialtyListDTO {
   id: string;
   name: string;
   description: string | null;
-  status: DepartmentStatus;
+  status: SpecialtyStatus;
   createdAt: string;
   updatedAt: string;
   doctorCount: number;
 }
 
-export type DepartmentDetailDTO = DepartmentListDTO & {
+export type SpecialtyDetailDTO = SpecialtyListDTO & {
   // Extended fields for detail view can be added here
 };
