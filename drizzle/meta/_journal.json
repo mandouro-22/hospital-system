@@ -71,6 +71,13 @@
       "when": 1787416492473,
       "tag": "0009_flawless_virginia_dare",
       "breakpoints": true
+    },
+    {
+      "idx": 10,
+      "version": "7",
+      "when": 1788195363829,
+      "tag": "0010_appointment-configuration",
+      "breakpoints": true
     }
   ]
 }

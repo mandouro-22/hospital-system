@@ -16,6 +16,28 @@ export const doctorSchedule = pgTable("doctor_schedule", {
 	updatedAt: timestamp("updated_at", { withTimezone: true, mode: 'string' }).defaultNow().notNull(),
 });
 
+export const appointmentConfiguration = pgTable("appointment_configuration", {
+	id: varchar({ length: 50 }).primaryKey().notNull(),
+	defaultDuration: varchar("default_duration", { length: 20 }).default('30 min').notNull(),
+	enabledStatuses: text("enabled_statuses").array().default(sql`ARRAY['scheduled', 'confirmed', 'completed', 'cancelled', 'no_show']::text[]`).notNull(),
+	cancellationNoticeHours: integer("cancellation_notice_hours").default(24).notNull(),
+	requireDoctorSchedule: boolean("require_doctor_schedule").default(true).notNull(),
+	createdAt: timestamp("created_at", { withTimezone: true, mode: 'string' }).defaultNow().notNull(),
+	updatedAt: timestamp("updated_at", { withTimezone: true, mode: 'string' }).defaultNow().notNull(),
+});
+
+export const hospitalWorkingHours = pgTable("hospital_working_hours", {
+	id: uuid().defaultRandom().primaryKey().notNull(),
+	dayOfWeek: integer("day_of_week").notNull(),
+	isClosed: boolean("is_closed").default(false).notNull(),
+	startTime: varchar("start_time", { length: 5 }),
+	endTime: varchar("end_time", { length: 5 }),
+	createdAt: timestamp("created_at", { withTimezone: true, mode: 'string' }).defaultNow().notNull(),
+	updatedAt: timestamp("updated_at", { withTimezone: true, mode: 'string' }).defaultNow().notNull(),
+}, (table) => [
+	unique("hospital_working_hours_day_of_week_unique").on(table.dayOfWeek),
+]);
+
 export const verification = pgTable("verification", {
 	id: uuid().defaultRandom().primaryKey().notNull(),
 	identifier: text().notNull(),

@@ -97,6 +97,10 @@ const navigation: NavItem[] = [
         title: "Specialties",
         url: "/admin/specialties",
       },
+      {
+        title: "Appointment Settings",
+        url: "/admin/appointment-settings",
+      },
     ],
   },
 ];

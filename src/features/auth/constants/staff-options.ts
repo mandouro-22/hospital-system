@@ -26,7 +26,7 @@ export const SPECIALIZATIONS = [
   "Obstetrics & Gynecology",
 ] as const;
 
-export const CONSULTATION_DURATIONS = ["15 min", "30 min", "45 min", "60 min"] as const;
+export const CONSULTATION_DURATIONS = ["15 min", "20 min", "30 min", "45 min", "60 min"] as const;
 
 export const JOB_TITLES = [
   "Consultant",
