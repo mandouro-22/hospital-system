@@ -10,15 +10,14 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import type { UserStatus } from "@/features/auth/types/auth.types";
+import { STATUSES } from "./department-management";
 
-const STATUS_OPTIONS: UserStatus[] = ["active", "inactive"];
-
+const STATUS_OPTIONS = ["active", "inactive"];
 type DepartmentFiltersProps = {
   search: string;
   onSearchChange: (value: string) => void;
-  status: UserStatus | "all";
-  onStatusChange: (value: UserStatus | "all") => void;
+  status: STATUSES | "all";
+  onStatusChange: (value: STATUSES | "all") => void;
 };
 
 export function DepartmentFilters({
@@ -46,7 +45,7 @@ export function DepartmentFilters({
         </Label>
         <Select
           value={status}
-          onValueChange={(value) => onStatusChange(value as UserStatus | "all")}
+          onValueChange={(value) => onStatusChange(value as STATUSES | "all")}
         >
           <SelectTrigger id="status-filter" className="w-40">
             <SelectValue placeholder="All statuses" />

@@ -5,7 +5,6 @@ import Link from "next/link";
 import { PlusIcon, BriefcaseMedical } from "lucide-react";
 import { useSpecialties } from "@/features/specialties/hooks/use-specialties";
 import type { SpecialtyListInput } from "@/features/specialties/validations/specialty.schema";
-import type { UserStatus } from "@/features/auth/types/auth.types";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { SpecialtyFilters } from "./specialty-filters";
@@ -28,7 +27,9 @@ export default function SpecialtyManagement() {
   const [debouncedSearch, setDebouncedSearch] = useState("");
   const [page, setPage] = useState(1);
   const [limit, setLimit] = useState(10);
-  const [status, setStatus] = useState<UserStatus | "all">("all");
+  const [status, setStatus] = useState<
+    NonNullable<SpecialtyListInput["status"]> | "all"
+  >("all");
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -50,7 +51,9 @@ export default function SpecialtyManagement() {
 
   const { data, isPending, error, refetch } = useSpecialties(params);
 
-  const handleStatusChange = (value: UserStatus | "all") => {
+  const handleStatusChange = (
+    value: NonNullable<SpecialtyListInput["status"]> | "all",
+  ) => {
     setStatus(value);
     setPage(1);
   };

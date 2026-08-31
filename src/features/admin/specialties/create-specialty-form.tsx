@@ -6,7 +6,11 @@ import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { Loader2 } from "lucide-react";
 import { useCreateSpecialty } from "@/features/specialties/hooks/use-specialties";
-import { createSpecialtySchema, type CreateSpecialtyInput } from "@/features/specialties/validations/specialty.schema";
+import {
+  createSpecialtySchema,
+  type CreateSpecialtyFormInput,
+  type CreateSpecialtyInput,
+} from "@/features/specialties/validations/specialty.schema";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
@@ -30,7 +34,11 @@ export default function CreateSpecialtyForm() {
   const router = useRouter();
   const createSpecialty = useCreateSpecialty();
 
-  const methods = useForm<CreateSpecialtyInput>({
+  const methods = useForm<
+    CreateSpecialtyFormInput,
+    unknown,
+    CreateSpecialtyInput
+  >({
     resolver: zodResolver(createSpecialtySchema),
     defaultValues: {
       status: "active",
@@ -55,7 +63,7 @@ export default function CreateSpecialtyForm() {
   };
 
   const renderField = (
-    name: keyof CreateSpecialtyInput,
+    name: keyof CreateSpecialtyFormInput,
     label: string,
     type: string = "text",
     placeholder: string,
@@ -83,7 +91,7 @@ export default function CreateSpecialtyForm() {
   );
 
   const renderTextarea = (
-    name: keyof CreateSpecialtyInput,
+    name: keyof CreateSpecialtyFormInput,
     label: string,
     placeholder: string,
   ) => (
@@ -110,7 +118,7 @@ export default function CreateSpecialtyForm() {
   );
 
   const renderSelect = (
-    name: keyof CreateSpecialtyInput,
+    name: keyof CreateSpecialtyFormInput,
     label: string,
     options: readonly { value: string; label: string }[],
     placeholder: string,

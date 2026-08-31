@@ -33,6 +33,7 @@ import { useUpdateDoctor } from "@/features/doctors/hooks/use-doctors";
 import { useActiveDepartments } from "@/features/departments/hooks/use-departments";
 import { useActiveSpecialties } from "@/features/specialties/hooks/use-specialties";
 import type { DoctorListDTO } from "@/features/doctors/types/doctor.types";
+import type { UpdateDoctorInput } from "@/features/doctors/validations/doctor.schema";
 
 type DoctorRowActionsProps = {
   doctor: DoctorListDTO;
@@ -45,7 +46,9 @@ export function DoctorRowActions({ doctor }: DoctorRowActionsProps) {
   const [departmentId, setDepartmentId] = useState<string | undefined>(
     undefined,
   );
-  const [specialization, setSpecialization] = useState<string>(doctor.specialization);
+  const [specialization, setSpecialization] = useState<
+    NonNullable<UpdateDoctorInput["specialization"]>
+  >(doctor.specialization as NonNullable<UpdateDoctorInput["specialization"]>);
   const updateDoctor = useUpdateDoctor();
   const { data: departmentsResponse } = useActiveDepartments();
   const departments = departmentsResponse?.data ?? [];
@@ -55,7 +58,9 @@ export function DoctorRowActions({ doctor }: DoctorRowActionsProps) {
   const openEdit = () => {
     setName(doctor.fullName);
     setDepartmentId(undefined);
-    setSpecialization(doctor.specialization);
+    setSpecialization(
+      doctor.specialization as NonNullable<UpdateDoctorInput["specialization"]>,
+    );
     setEditOpen(true);
   };
 
@@ -125,7 +130,11 @@ export function DoctorRowActions({ doctor }: DoctorRowActionsProps) {
               <Label htmlFor={`edit-specialty-${doctor.id}`}>Specialty</Label>
               <Select
                 value={specialization}
-                onValueChange={setSpecialization}
+                onValueChange={(value) =>
+                  setSpecialization(
+                    value as NonNullable<UpdateDoctorInput["specialization"]>,
+                  )
+                }
               >
                 <SelectTrigger id={`edit-specialty-${doctor.id}`} className="w-full">
                   <SelectValue placeholder="Keep current specialty" />

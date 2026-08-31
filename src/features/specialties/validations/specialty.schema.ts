@@ -77,6 +77,7 @@ export const createSpecialtySchema = z.object({
 });
 
 export type CreateSpecialtyInput = z.infer<typeof createSpecialtySchema>;
+export type CreateSpecialtyFormInput = z.input<typeof createSpecialtySchema>;
 
 export const updateSpecialtySchema = z
   .object({

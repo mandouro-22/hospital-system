@@ -1,6 +1,6 @@
 import { z } from "zod";
 
-const STATUSES = ["active", "inactive"] as const;
+export const STATUSES = ["active", "inactive"] as const;
 
 export const departmentListSchema = z.object({
   page: z.coerce
@@ -69,11 +69,9 @@ export const createDepartmentSchema = z.object({
     .optional()
     .nullable(),
 
-  status: z
-    .enum(STATUSES, {
-      error: "Invalid department status",
-    })
-    .default("active"),
+  status: z.enum(STATUSES, {
+    error: "Invalid department status",
+  }),
 });
 
 export type CreateDepartmentInput = z.infer<typeof createDepartmentSchema>;

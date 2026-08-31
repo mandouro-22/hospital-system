@@ -31,7 +31,9 @@ export default function DoctorManagement() {
   const [page, setPage] = useState(1);
   const [limit, setLimit] = useState(10);
   const [departmentId, setDepartmentId] = useState<string | "all">("all");
-  const [specialization, setSpecialization] = useState<string | "all">("all");
+  const [specialization, setSpecialization] = useState<
+    NonNullable<DoctorListInput["specialization"]> | "all"
+  >("all");
   const [status, setStatus] = useState<UserStatus | "all">("all");
   const { data: departmentsResponse } = useDepartments();
   const departments = departmentsResponse?.data ?? [];
@@ -65,7 +67,9 @@ export default function DoctorManagement() {
     setPage(1);
   };
 
-  const handleSpecializationChange = (value: string | "all") => {
+  const handleSpecializationChange = (
+    value: NonNullable<DoctorListInput["specialization"]> | "all",
+  ) => {
     setSpecialization(value);
     setPage(1);
   };

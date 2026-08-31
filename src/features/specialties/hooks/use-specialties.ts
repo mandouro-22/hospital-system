@@ -8,7 +8,7 @@ export function useSpecialties(params?: SpecialtyListInput) {
   return useQuery({
     queryKey: ["specialties", params],
     queryFn: async () => {
-      const res = await apiClient.api.specialties.$get({ query: params });
+      const res = await apiClient.api.specialties.$get({ query: params ?? {} });
       return parseApiResponse<ApiPaginatedResponse<SpecialtyListDTO>>(res);
     },
   });

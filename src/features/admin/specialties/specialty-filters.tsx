@@ -10,15 +10,20 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import type { UserStatus } from "@/features/auth/types/auth.types";
+import type { SpecialtyListInput } from "@/features/specialties/validations/specialty.schema";
 
-const STATUS_OPTIONS: UserStatus[] = ["active", "inactive"];
+const STATUS_OPTIONS: NonNullable<SpecialtyListInput["status"]>[] = [
+  "active",
+  "inactive",
+];
 
 type SpecialtyFiltersProps = {
   search: string;
   onSearchChange: (value: string) => void;
-  status: UserStatus | "all";
-  onStatusChange: (value: UserStatus | "all") => void;
+  status: NonNullable<SpecialtyListInput["status"]> | "all";
+  onStatusChange: (
+    value: NonNullable<SpecialtyListInput["status"]> | "all",
+  ) => void;
 };
 
 export function SpecialtyFilters({
@@ -46,7 +51,11 @@ export function SpecialtyFilters({
         </Label>
         <Select
           value={status}
-          onValueChange={(value) => onStatusChange(value as UserStatus | "all")}
+          onValueChange={(value) =>
+            onStatusChange(
+              value as NonNullable<SpecialtyListInput["status"]> | "all",
+            )
+          }
         >
           <SelectTrigger id="status-filter" className="w-40">
             <SelectValue placeholder="All statuses" />

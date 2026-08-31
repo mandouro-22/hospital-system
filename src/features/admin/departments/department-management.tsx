@@ -5,12 +5,13 @@ import Link from "next/link";
 import { PlusIcon, Building2 } from "lucide-react";
 import { useDepartments } from "@/features/departments/hooks/use-departments";
 import type { DepartmentListInput } from "@/features/departments/validations/department.schema";
-import type { UserStatus } from "@/features/auth/types/auth.types";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { DepartmentFilters } from "./department-filters";
 import { DepartmentTable } from "./department-table";
 import { DepartmentPagination } from "./department-pagination";
+
+export type STATUSES = "active" | "inactive";
 
 function AddDepartmentButton() {
   return (
@@ -28,7 +29,7 @@ export default function DepartmentManagement() {
   const [debouncedSearch, setDebouncedSearch] = useState("");
   const [page, setPage] = useState(1);
   const [limit, setLimit] = useState(10);
-  const [status, setStatus] = useState<UserStatus | "all">("all");
+  const [status, setStatus] = useState<STATUSES | "all">("all");
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -50,7 +51,7 @@ export default function DepartmentManagement() {
 
   const { data, isPending, error, refetch } = useDepartments(params);
 
-  const handleStatusChange = (value: UserStatus | "all") => {
+  const handleStatusChange = (value: STATUSES | "all") => {
     setStatus(value);
     setPage(1);
   };

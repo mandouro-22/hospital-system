@@ -8,7 +8,7 @@ export function useDepartments(params?: DepartmentListInput) {
   return useQuery({
     queryKey: ["departments", params],
     queryFn: async () => {
-      const res = await apiClient.api.departments.$get({ query: params });
+      const res = await apiClient.api.departments.$get({ query: params ?? {} });
       return parseApiResponse<ApiPaginatedResponse<DepartmentListDTO>>(res);
     },
   });

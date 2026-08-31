@@ -6,7 +6,10 @@ import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { Loader2 } from "lucide-react";
 import { useCreateDepartment } from "@/features/departments/hooks/use-departments";
-import { createDepartmentSchema, type CreateDepartmentInput } from "@/features/departments/validations/department.schema";
+import {
+  createDepartmentSchema,
+  type CreateDepartmentInput,
+} from "@/features/departments/validations/department.schema";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
@@ -49,7 +52,8 @@ export default function CreateDepartmentForm() {
       toast.success("Department created successfully");
       router.push("/admin/departments");
     } catch (error) {
-      const errorMessage = error instanceof Error ? error.message : "Failed to create department";
+      const errorMessage =
+        error instanceof Error ? error.message : "Failed to create department";
       toast.error(errorMessage);
     }
   };
@@ -167,13 +171,22 @@ export default function CreateDepartmentForm() {
                 {renderField("name", "Name *", "text", "Enter department name")}
               </div>
 
-              {renderTextarea("description", "Description", "Enter description")}
+              {renderTextarea(
+                "description",
+                "Description",
+                "Enter description",
+              )}
 
               <div className="space-y-6 rounded-lg border p-4">
                 <p className="text-sm font-medium text-muted-foreground">
                   Status
                 </p>
-                {renderSelect("status", "Status", statusOptions, "Select status")}
+                {renderSelect(
+                  "status",
+                  "Status",
+                  statusOptions,
+                  "Select status",
+                )}
               </div>
 
               <div className="flex items-center justify-end gap-3">

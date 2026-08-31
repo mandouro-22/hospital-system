@@ -12,6 +12,8 @@ import {
 } from "@/components/ui/select";
 import type { DepartmentOption } from "@/features/departments/types/department.types";
 import type { UserStatus } from "@/features/auth/types/auth.types";
+import type { DoctorListInput } from "@/features/doctors/validations/doctor.schema";
+import { SpecialtyOption } from "@/features/specialties/types/specialty.types";
 
 const STATUS_OPTIONS: UserStatus[] = [
   "active",
@@ -27,9 +29,11 @@ type DoctorFiltersProps = {
   departments: DepartmentOption[];
   department: string | "all";
   onDepartmentChange: (value: string | "all") => void;
-  specialties: SpecialtyOptionType[];
-  specialization: string | "all";
-  onSpecializationChange: (value: string | "all") => void;
+  specialties: SpecialtyOption[];
+  specialization: NonNullable<DoctorListInput["specialization"]> | "all";
+  onSpecializationChange: (
+    value: NonNullable<DoctorListInput["specialization"]> | "all",
+  ) => void;
   status: UserStatus | "all";
   onStatusChange: (value: UserStatus | "all") => void;
 };
@@ -88,7 +92,11 @@ export function DoctorFilters({
         <Select
           value={specialization}
           onValueChange={(value) =>
-            onSpecializationChange(value === "all" ? "all" : value)
+            onSpecializationChange(
+              value === "all"
+                ? "all"
+                : (value as NonNullable<DoctorListInput["specialization"]>),
+            )
           }
         >
           <SelectTrigger id="specialization-filter" className="w-44">
