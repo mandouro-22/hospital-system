@@ -1,5 +1,5 @@
 import { relations } from "drizzle-orm/relations";
-import { user, account, session, staff, doctor, receptionist } from "./schema";
+import { user, account, session, staff, doctor, receptionist, patient, department, specialty } from "./schema";
 
 export const accountRelations = relations(account, ({one}) => ({
 	user: one(user, {
@@ -14,6 +14,7 @@ export const userRelations = relations(user, ({many}) => ({
 	staff: many(staff),
 	doctors: many(doctor),
 	receptionists: many(receptionist),
+	patients: many(patient),
 }));
 
 export const sessionRelations = relations(session, ({one}) => ({
@@ -27,6 +28,10 @@ export const staffRelations = relations(staff, ({one}) => ({
 	user: one(user, {
 		fields: [staff.userId],
 		references: [user.id]
+	}),
+	department: one(department, {
+		fields: [staff.departmentId],
+		references: [department.id]
 	}),
 }));
 
@@ -42,4 +47,19 @@ export const receptionistRelations = relations(receptionist, ({one}) => ({
 		fields: [receptionist.userId],
 		references: [user.id]
 	}),
+}));
+
+export const patientRelations = relations(patient, ({one}) => ({
+	user: one(user, {
+		fields: [patient.userId],
+		references: [user.id]
+	}),
+}));
+
+export const departmentRelations = relations(department, ({many}) => ({
+	staff: many(staff),
+}));
+
+export const specialtyRelations = relations(specialty, ({many}) => ({
+	// Doctors reference specialty through the specialization field (string-based)
 }));

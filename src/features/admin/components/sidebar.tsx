@@ -6,12 +6,14 @@ import { usePathname, useRouter } from "next/navigation";
 import {
   ChevronsUpDown,
   HandHelping,
+  HeartPulse,
   LayoutDashboard,
   LogOut,
   Search,
   Stethoscope,
   UserRound,
   Users,
+  Building2,
   type LucideIcon,
 } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -76,6 +78,30 @@ const navigation: NavItem[] = [
     title: "Receptionists",
     url: "/admin/receptionists",
     icon: HandHelping,
+  },
+  {
+    title: "Patients",
+    url: "/admin/patients",
+    icon: HeartPulse,
+  },
+  {
+    title: "Hospital Configuration",
+    url: "/admin/departments",
+    icon: Building2,
+    children: [
+      {
+        title: "Departments",
+        url: "/admin/departments",
+      },
+      {
+        title: "Specialties",
+        url: "/admin/specialties",
+      },
+      {
+        title: "Appointment Settings",
+        url: "/admin/appointment-settings",
+      },
+    ],
   },
 ];
 

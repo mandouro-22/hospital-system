@@ -49,8 +49,32 @@ export class AppError extends Error {
     return new AppError(409, "LICENSE_NUMBER_ALREADY_EXISTS", message);
   }
 
+  static phnAlreadyExists(message = "PHN already exists") {
+    return new AppError(409, "PHN_ALREADY_EXISTS", message);
+  }
+
   static departmentNotFound(message = "Department not found") {
     return new AppError(404, "DEPARTMENT_NOT_FOUND", message);
+  }
+
+  static departmentNameAlreadyExists(message = "Department name already exists") {
+    return new AppError(409, "DEPARTMENT_NAME_ALREADY_EXISTS", message);
+  }
+
+  static departmentHasActiveDoctors(message = "Cannot deactivate or delete department with active doctors") {
+    return new AppError(409, "DEPARTMENT_HAS_ACTIVE_DOCTORS", message);
+  }
+
+  static specialtyNotFound(message = "Specialty not found") {
+    return new AppError(404, "SPECIALTY_NOT_FOUND", message);
+  }
+
+  static specialtyNameAlreadyExists(message = "Specialty name already exists") {
+    return new AppError(409, "SPECIALTY_NAME_ALREADY_EXISTS", message);
+  }
+
+  static specialtyHasActiveDoctors(message = "Cannot deactivate or delete specialty with active doctors") {
+    return new AppError(409, "SPECIALTY_HAS_ACTIVE_DOCTORS", message);
   }
 
   static invalidRole(message = "Invalid role") {

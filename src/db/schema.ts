@@ -4,6 +4,7 @@ import { sql } from "drizzle-orm"
 
 export const doctorNumberSeq = pgSequence("doctor_number_seq", {  startWith: "1", increment: "1", minValue: "1", maxValue: "9223372036854775807", cache: "1", cycle: false })
 export const receptionistNumberSeq = pgSequence("receptionist_number_seq", {  startWith: "1", increment: "1", minValue: "1", maxValue: "9223372036854775807", cache: "1", cycle: false })
+export const patientNumberSeq = pgSequence("patient_number_seq", {  startWith: "1", increment: "1", minValue: "1", maxValue: "9223372036854775807", cache: "1", cycle: false })
 
 export const doctorSchedule = pgTable("doctor_schedule", {
 	id: uuid().defaultRandom().primaryKey().notNull(),
@@ -14,6 +15,28 @@ export const doctorSchedule = pgTable("doctor_schedule", {
 	createdAt: timestamp("created_at", { withTimezone: true, mode: 'string' }).defaultNow().notNull(),
 	updatedAt: timestamp("updated_at", { withTimezone: true, mode: 'string' }).defaultNow().notNull(),
 });
+
+export const appointmentConfiguration = pgTable("appointment_configuration", {
+	id: varchar({ length: 50 }).primaryKey().notNull(),
+	defaultDuration: varchar("default_duration", { length: 20 }).default('30 min').notNull(),
+	enabledStatuses: text("enabled_statuses").array().default(sql`ARRAY['scheduled', 'confirmed', 'completed', 'cancelled', 'no_show']::text[]`).notNull(),
+	cancellationNoticeHours: integer("cancellation_notice_hours").default(24).notNull(),
+	requireDoctorSchedule: boolean("require_doctor_schedule").default(true).notNull(),
+	createdAt: timestamp("created_at", { withTimezone: true, mode: 'string' }).defaultNow().notNull(),
+	updatedAt: timestamp("updated_at", { withTimezone: true, mode: 'string' }).defaultNow().notNull(),
+});
+
+export const hospitalWorkingHours = pgTable("hospital_working_hours", {
+	id: uuid().defaultRandom().primaryKey().notNull(),
+	dayOfWeek: integer("day_of_week").notNull(),
+	isClosed: boolean("is_closed").default(false).notNull(),
+	startTime: varchar("start_time", { length: 5 }),
+	endTime: varchar("end_time", { length: 5 }),
+	createdAt: timestamp("created_at", { withTimezone: true, mode: 'string' }).defaultNow().notNull(),
+	updatedAt: timestamp("updated_at", { withTimezone: true, mode: 'string' }).defaultNow().notNull(),
+}, (table) => [
+	unique("hospital_working_hours_day_of_week_unique").on(table.dayOfWeek),
+]);
 
 export const verification = pgTable("verification", {
 	id: uuid().defaultRandom().primaryKey().notNull(),
@@ -75,10 +98,22 @@ export const department = pgTable("department", {
 	id: varchar({ length: 50 }).primaryKey().notNull(),
 	name: varchar({ length: 100 }).notNull(),
 	description: text(),
+	status: varchar({ length: 20 }).default('active').notNull(),
 	createdAt: timestamp("created_at", { withTimezone: true, mode: 'string' }).defaultNow().notNull(),
 	updatedAt: timestamp("updated_at", { withTimezone: true, mode: 'string' }).defaultNow().notNull(),
 }, (table) => [
 	unique("department_name_unique").on(table.name),
+]);
+
+export const specialty = pgTable("specialty", {
+	id: varchar({ length: 50 }).primaryKey().notNull(),
+	name: varchar({ length: 100 }).notNull(),
+	description: text(),
+	status: varchar({ length: 20 }).default('active').notNull(),
+	createdAt: timestamp("created_at", { withTimezone: true, mode: 'string' }).defaultNow().notNull(),
+	updatedAt: timestamp("updated_at", { withTimezone: true, mode: 'string' }).defaultNow().notNull(),
+}, (table) => [
+	unique("specialty_name_unique").on(table.name),
 ]);
 
 export const user = pgTable("user", {
@@ -148,4 +183,25 @@ export const receptionist = pgTable("receptionist", {
 			name: "receptionist_user_id_fkey"
 		}).onDelete("cascade"),
 	unique("receptionist_receptionist_number_key").on(table.receptionistNumber),
+]);
+
+export const patient = pgTable("patient", {
+	id: uuid().defaultRandom().primaryKey().notNull(),
+	userId: uuid("user_id").notNull(),
+	phn: varchar({ length: 50 }).notNull(),
+	patientNumber: varchar("patient_number", { length: 20 }).default(sql`(\'PAT-\'::text || lpad((nextval(\'patient_number_seq\'::regclass))::text, 6, \'0\'::text))`).notNull(),
+	phone: varchar({ length: 20 }),
+	gender: varchar({ length: 20 }),
+	dateOfBirth: timestamp("date_of_birth", { withTimezone: true, mode: 'string' }),
+	address: text(),
+	createdAt: timestamp("created_at", { withTimezone: true, mode: 'string' }).defaultNow().notNull(),
+	updatedAt: timestamp("updated_at", { withTimezone: true, mode: 'string' }).defaultNow().notNull(),
+}, (table) => [
+	uniqueIndex("patient_patient_number_unique").using("btree", table.patientNumber.asc().nullsLast().op("text_ops")),
+	foreignKey({
+			columns: [table.userId],
+			foreignColumns: [user.id],
+			name: "patient_user_id_user_id_fk"
+		}).onDelete("cascade"),
+	unique("patient_phn_unique").on(table.phn),
 ]);

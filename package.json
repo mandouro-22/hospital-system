@@ -7,7 +7,8 @@
     "start": "next start",
     "lint": "eslint",
     "seed:admin": "tsx src/script/seed-admin.ts",
-    "seed:departments": "tsx src/script/seed-departments.ts"
+    "seed:departments": "tsx src/script/seed-departments.ts",
+    "seed:patients": "tsx src/script/seed-patients.ts"
   },
   "dependencies": {
     "@better-auth/infra": "^0.3.7",

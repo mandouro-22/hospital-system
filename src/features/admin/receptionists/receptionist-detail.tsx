@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { ArrowLeft, CalendarDays, Loader2 } from "lucide-react";
+import { ArrowLeft, Loader2 } from "lucide-react";
 import { useReceptionist } from "@/features/receptionists/hooks/use-receptionists";
 import { statusVariant } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";

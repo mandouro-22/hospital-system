@@ -1,10 +1,6 @@
 import Provider from "@/providers/provider";
 import type { Metadata } from "next";
 import "./globals.css";
-import { Roboto } from "next/font/google";
-import { cn } from "@/lib/utils";
-
-const roboto = Roboto({subsets:['latin'],variable:'--font-sans'});
 
 export const metadata: Metadata = {
   title: "Hono | nextjs",
@@ -17,7 +13,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className={cn("font-sans", roboto.variable)}>
+    <html lang="en" className="font-sans">
       <body>
         <Provider>{children}</Provider>
       </body>

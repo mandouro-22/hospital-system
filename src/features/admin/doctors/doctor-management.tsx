@@ -5,6 +5,7 @@ import Link from "next/link";
 import { PlusIcon } from "lucide-react";
 import { useDoctors } from "@/features/doctors/hooks/use-doctors";
 import { useDepartments } from "@/features/departments/hooks/use-departments";
+import { useSpecialties } from "@/features/specialties/hooks/use-specialties";
 import type { DoctorListInput } from "@/features/doctors/validations/doctor.schema";
 import type { UserStatus } from "@/features/auth/types/auth.types";
 import { Card } from "@/components/ui/card";
@@ -12,8 +13,6 @@ import { Button } from "@/components/ui/button";
 import { DoctorFilters } from "./doctor-filters";
 import { DoctorTable } from "./doctor-table";
 import { DoctorPagination } from "./doctor-pagination";
-
-type Specialization = NonNullable<DoctorListInput["specialization"]>;
 
 function AddDoctorButton() {
   return (
@@ -32,10 +31,14 @@ export default function DoctorManagement() {
   const [page, setPage] = useState(1);
   const [limit, setLimit] = useState(10);
   const [departmentId, setDepartmentId] = useState<string | "all">("all");
-  const [specialization, setSpecialization] = useState<Specialization | "all">("all");
+  const [specialization, setSpecialization] = useState<
+    NonNullable<DoctorListInput["specialization"]> | "all"
+  >("all");
   const [status, setStatus] = useState<UserStatus | "all">("all");
   const { data: departmentsResponse } = useDepartments();
   const departments = departmentsResponse?.data ?? [];
+  const { data: specialtiesResponse } = useSpecialties();
+  const specialties = specialtiesResponse?.data ?? [];
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -64,7 +67,9 @@ export default function DoctorManagement() {
     setPage(1);
   };
 
-  const handleSpecializationChange = (value: Specialization | "all") => {
+  const handleSpecializationChange = (
+    value: NonNullable<DoctorListInput["specialization"]> | "all",
+  ) => {
     setSpecialization(value);
     setPage(1);
   };
@@ -97,6 +102,7 @@ export default function DoctorManagement() {
         departments={departments}
         department={departmentId}
         onDepartmentChange={handleDepartmentChange}
+        specialties={specialties}
         specialization={specialization}
         onSpecializationChange={handleSpecializationChange}
         status={status}
