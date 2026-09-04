@@ -78,6 +78,13 @@
       "when": 1788195363829,
       "tag": "0010_appointment-configuration",
       "breakpoints": true
+    },
+    {
+      "idx": 11,
+      "version": "7",
+      "when": 1788540000000,
+      "tag": "0011_add-appointments",
+      "breakpoints": true
     }
   ]
 }

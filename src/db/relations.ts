@@ -1,5 +1,5 @@
 import { relations } from "drizzle-orm/relations";
-import { user, account, session, staff, doctor, receptionist, patient, department, specialty } from "./schema";
+import { user, account, session, staff, doctor, receptionist, patient, department, specialty, appointment, disabledAppointmentDate } from "./schema";
 
 export const accountRelations = relations(account, ({one}) => ({
 	user: one(user, {
@@ -15,6 +15,7 @@ export const userRelations = relations(user, ({many}) => ({
 	doctors: many(doctor),
 	receptionists: many(receptionist),
 	patients: many(patient),
+	disabledAppointmentDates: many(disabledAppointmentDate),
 }));
 
 export const sessionRelations = relations(session, ({one}) => ({
@@ -35,11 +36,12 @@ export const staffRelations = relations(staff, ({one}) => ({
 	}),
 }));
 
-export const doctorRelations = relations(doctor, ({one}) => ({
+export const doctorRelations = relations(doctor, ({one, many}) => ({
 	user: one(user, {
 		fields: [doctor.userId],
 		references: [user.id]
 	}),
+	appointments: many(appointment),
 }));
 
 export const receptionistRelations = relations(receptionist, ({one}) => ({
@@ -49,9 +51,28 @@ export const receptionistRelations = relations(receptionist, ({one}) => ({
 	}),
 }));
 
-export const patientRelations = relations(patient, ({one}) => ({
+export const patientRelations = relations(patient, ({one, many}) => ({
 	user: one(user, {
 		fields: [patient.userId],
+		references: [user.id]
+	}),
+	appointments: many(appointment),
+}));
+
+export const appointmentRelations = relations(appointment, ({one}) => ({
+	patient: one(patient, {
+		fields: [appointment.patientId],
+		references: [patient.id]
+	}),
+	doctor: one(doctor, {
+		fields: [appointment.doctorId],
+		references: [doctor.id]
+	}),
+}));
+
+export const disabledAppointmentDateRelations = relations(disabledAppointmentDate, ({one}) => ({
+	createdByUser: one(user, {
+		fields: [disabledAppointmentDate.createdBy],
 		references: [user.id]
 	}),
 }));

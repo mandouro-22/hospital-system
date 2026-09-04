@@ -4,6 +4,7 @@ import { useMemo, useState } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import {
+  CalendarDays,
   ChevronsUpDown,
   HandHelping,
   HeartPulse,
@@ -83,6 +84,11 @@ const navigation: NavItem[] = [
     title: "Patients",
     url: "/admin/patients",
     icon: HeartPulse,
+  },
+  {
+    title: "Appointments",
+    url: "/admin/appointments",
+    icon: CalendarDays,
   },
   {
     title: "Hospital Configuration",

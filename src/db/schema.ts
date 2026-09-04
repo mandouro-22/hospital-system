@@ -1,4 +1,4 @@
-import { pgTable, uuid, integer, varchar, timestamp, index, text, foreignKey, unique, boolean, uniqueIndex, pgSequence } from "drizzle-orm/pg-core"
+import { pgTable, uuid, integer, varchar, timestamp, date, index, text, foreignKey, unique, boolean, uniqueIndex, pgSequence } from "drizzle-orm/pg-core"
 import { sql } from "drizzle-orm"
 
 
@@ -204,4 +204,47 @@ export const patient = pgTable("patient", {
 			name: "patient_user_id_user_id_fk"
 		}).onDelete("cascade"),
 	unique("patient_phn_unique").on(table.phn),
+]);
+
+export const appointment = pgTable("appointment", {
+	id: uuid().defaultRandom().primaryKey().notNull(),
+	patientId: uuid("patient_id").notNull(),
+	doctorId: uuid("doctor_id").notNull(),
+	scheduledDate: date("scheduled_date", { mode: "string" }).notNull(),
+	startTime: varchar("start_time", { length: 5 }).notNull(),
+	endTime: varchar("end_time", { length: 5 }).notNull(),
+	status: varchar({ length: 20 }).default("scheduled").notNull(),
+	notes: text(),
+	createdAt: timestamp("created_at", { withTimezone: true, mode: "string" }).defaultNow().notNull(),
+	updatedAt: timestamp("updated_at", { withTimezone: true, mode: "string" }).defaultNow().notNull(),
+}, (table) => [
+	index("appointment_scheduled_date_idx").using("btree", table.scheduledDate.asc().nullsLast()),
+	index("appointment_doctor_id_idx").using("btree", table.doctorId.asc().nullsLast().op("uuid_ops")),
+	index("appointment_patient_id_idx").using("btree", table.patientId.asc().nullsLast().op("uuid_ops")),
+	foreignKey({
+		columns: [table.patientId],
+		foreignColumns: [patient.id],
+		name: "appointment_patient_id_fk",
+	}).onDelete("restrict"),
+	foreignKey({
+		columns: [table.doctorId],
+		foreignColumns: [doctor.id],
+		name: "appointment_doctor_id_fk",
+	}).onDelete("restrict"),
+]);
+
+export const disabledAppointmentDate = pgTable("disabled_appointment_date", {
+	id: uuid().defaultRandom().primaryKey().notNull(),
+	disabledDate: date("disabled_date", { mode: "string" }).notNull(),
+	reason: text(),
+	createdBy: uuid("created_by"),
+	createdAt: timestamp("created_at", { withTimezone: true, mode: "string" }).defaultNow().notNull(),
+	updatedAt: timestamp("updated_at", { withTimezone: true, mode: "string" }).defaultNow().notNull(),
+}, (table) => [
+	unique("disabled_appointment_date_disabled_date_unique").on(table.disabledDate),
+	foreignKey({
+		columns: [table.createdBy],
+		foreignColumns: [user.id],
+		name: "disabled_appointment_date_created_by_fk",
+	}).onDelete("set null"),
 ]);

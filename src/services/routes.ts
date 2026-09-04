@@ -9,6 +9,7 @@ import { receptionistRoutes } from "@/services/receptionist.routes";
 import { patientRoutes } from "@/services/patient.routes";
 import { specialtyRoutes } from "@/services/specialty.routes";
 import { appointmentSettingsRoutes } from "@/services/appointment-settings.routes";
+import { appointmentRoutes } from "@/services/appointment.routes";
 import type { AuthVariables } from "@/features/auth/middleware/auth.middleware";
 
 export const apiRoutes = new Hono<{ Variables: AuthVariables }>()
@@ -21,7 +22,8 @@ export const apiRoutes = new Hono<{ Variables: AuthVariables }>()
   .route("/users", userRoutes)
   .route("/receptionists", receptionistRoutes)
   .route("/patients", patientRoutes)
-  .route("/appointment-settings", appointmentSettingsRoutes);
+  .route("/appointment-settings", appointmentSettingsRoutes)
+  .route("/appointments", appointmentRoutes);
 
 type AppSchema = ExtractSchema<typeof apiRoutes>;
 
